@@ -28,39 +28,6 @@ contract SecureFundTransfer {
         owner = msg.sender;
     }
 
-    // function to request proof
-    function requestProof(address _validator) public {
-        require(msg.sender == owner, "Unauthorized account");
-
-        // call the WIME-ACCESS API to request proof
-        bytes memory proof = callAPI(
-            bytes4(keccak256("proof(address)")),
-            _validator
-        );
-
-        // verify the proof
-        require(verifyMultiSigSucceeded(proof), "Invalid proof");
-    }
-
-    // function to check if all validator called the smart contract
-    function verifyMultiSigSucceeded() private {
-        for (uint256 i = 0; i < authorizedAddressesForMultiSig.length; i++) {
-            if (!authorizedAddressesForMultiSig[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function callAPI(string memory _endpoint) public {
-        // create the request
-        jobId = oracle.makeChainlinkRequest(
-            _endpoint,
-            address(this),
-            this.fulfill.selector
-        );
-    }
-
     // function to add validator
     function addValidator(address _validator) public {
         require(msg.sender == owner, "Unauthorized account");
@@ -68,28 +35,9 @@ contract SecureFundTransfer {
         // add the validator to the authorized addresses for multi-sig
         authorizedAddressesForMultiSig.push(_validator);
     }
-
-    // function to verify signature
-    function verifySignature(address _validator, bytes32 _signature) public {
-        require(
-            msg.sender == authorizedAddressesForMultiSig,
-            "Unauthorized account"
-        );
-
-        // check if the validator is in the authorized addresses for multi-sig
-        require(validatorExists(_validator), "Unauthorized validator");
-
-        // verify the signature
-        require(
-            address(
-                uint160(keccak256(abi.encodePacked(_validator, vaultPassword)))
-            ).recover(_signature) == _validator,
-            "Invalid signature"
-        );
-    }
-
-    // function to trigger the transfer fund smart contract
-    function triggerTransferFundSmartContract(
+    
+    // TODO: function to trigger the transfer fund smart contract
+    function getDecryptedPassword(
         address payable _recipient,
         uint256 _value
     ) public {
@@ -102,5 +50,53 @@ contract SecureFundTransfer {
         );
 
         // return vault password
+    }
+    // TODO: function to request proof
+    function requestProof(address _validator) public {
+        require(msg.sender == owner, "Unauthorized account");
+
+        // call the WIME-ACCESS API to request proof
+        bytes memory proof = callAPI(
+            bytes4(keccak256("proof(address)")),
+            _validator
+        );
+
+        // verify the proof
+        require(verifyMultiSigSucceeded(proof), "Invalid proof");
+        // OR below?
+        // create the request
+        jobId = oracle.makeChainlinkRequest(
+            _endpoint,
+            address(this),
+            this.fulfill.selector
+        );
+    }
+
+    // function to verify signature
+    function verifySignature(address _validator, bytes32 _signature) public {
+        require(
+            msg.sender == authorizedAddressesForMultiSig,
+            "Unauthorized account"
+        );
+
+        // check if the validator is in the authorized addresses for multi-sig
+        require(validatorExists(_validator), "Unauthorized validator");
+
+        // TODO: verify the signature
+        require(
+            address(
+                uint160(keccak256(abi.encodePacked(_validator, vaultPassword)))
+            ).recover(_signature) == _validator,
+            "Invalid signature"
+        );
+    }
+    // TODO: function to check if all validator called the smart contract
+    function verifyMultiSigSucceeded() private {
+        for (uint256 i = 0; i < authorizedAddressesForMultiSig.length; i++) {
+            if (!authorizedAddressesForMultiSig[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
