@@ -20,6 +20,7 @@ const pages = [
   { name: "Secure Password", route: "/secure-password" },
   { name: "Activate Will", route: "/activate-will" },
   { name: "Validate Will", route: "/validate-will" },
+  { name: "Transfer Assets", route: "/transfer-assets" },
 ];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
