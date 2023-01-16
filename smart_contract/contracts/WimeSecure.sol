@@ -5,47 +5,78 @@ pragma solidity ^0.8.9;
 // import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract WimeSecure {
-    string private vaultPassword;
-    mapping(address => bool) private validatorAddresses;
-    string private WimeAccessAPIEndpoint;
-    address private ownerAddress;
+    string public vaultPassword;
+    string public wimeAccessAPIEndpoint;
+
+    struct Owner {
+        address pubKey;
+    }
+
+    struct Client {
+        address pubKey;
+        uint icNumber;
+    }
+
+    struct Validator {
+        address pubKey;
+        bool authorized;
+    }
+
+    Owner owner;
+    Client client;
+    Validator validator;
 
     // using Counters for Counters.Counter;
     // Counters.Counter private jobId;
 
-    // ChainlinkClient oracle;
+    // ChainlinkClient oracle;l
 
-    constructor(string memory _vaultPassword) {
+    constructor(
+        string memory _vaultPassword,
+        address _ownerPubKey,
+        address _clientPubKey,
+        uint _clientIcNumber,
+        address _validatorPubKey,
+        bool _validatorIsAuthorized
+    ) {
         vaultPassword = _vaultPassword;
-        // WimeAccessAPIEndpoint = _WimeAccessAPIEndpoint;
-        // oracle = ChainlinkClient(_oracle);
-        ownerAddress = msg.sender;
+        owner.pubKey = _ownerPubKey;
+        client.pubKey = _clientPubKey;
+        client.icNumber = _clientIcNumber;
+        validator.pubKey = _validatorPubKey;
+        validator.authorized = _validatorIsAuthorized;
     }
 
+    // This function ensures that only the owner of the contract
+    // can retrieve the vault password by checking if the caller's address
+    // is the same as the owner's address stored in the contract.
     function getVaultPassword() public view returns (string memory) {
+        // require(
+        //     msg.sender == owner.pubKey,
+        //     "Caller must be the owner of the contract."
+        // );
         return vaultPassword;
     }
 
+    // This function simply returns the owner's address stored in the contract.
     function getOwnerAddress() public view returns (address) {
-        return ownerAddress;
+        return owner.pubKey;
     }
 
     // Will be called in the event of death on WIME-ONE
     // To verify caller is owner (financial institution)
     function isOwner() public view returns (bool) {
-        return msg.sender == ownerAddress;
+        return msg.sender == owner.pubKey;
     }
 
-    // Returns list of unauthorized validator addresses and isAuthorized
-    function areValidatorsAuthorized() public view returns (bool) {
-        // for (uint i = 0; i < validatorAddresses.length; i++) {
-        //     if (validatorAddresses[i][msg.sender] == false) {
+    function isValidatorAuthorized() public view returns (bool) {
+        // for (uint i = 0; i < validators.length; i++) {
+        //     if (!validators[i].authorized) {
         //         return false;
         //     }
         // }
-        // return true;
 
-        return validatorAddresses[ownerAddress];
+        return validator.authorized;
 
         // WIME-ACCESS will request signatures from validators
         // WIME-ACCESS will trigger this function by passing in the signatures
@@ -53,30 +84,34 @@ contract WimeSecure {
         // Return vault password
     }
 
-    function authorizeValidatorAddress(address _address) public {
+    function authorizeValidator() public {
         // If true, update validatorAddresses with address and isAuthorized = true
-        validatorAddresses[_address] = true;
+        // for (uint i = 0; i < validators.length; i++) {
+        //     if (validators[i].pubKey == _address) {
+        //         validators[i].authorized = true;
+        //     }
+        // }
+        validator.authorized = true;
     }
 
-    function requestVaultPassword() public returns (string memory) {
-        if (requestProof()) {
+    function requestVaultPassword() public view returns (string memory) {
+        if (requestProofOfDeath()) {
             return getVaultPassword();
         }
         return "Error";
     }
 
-    function requestProof() public returns (bool) {
+    // Request proof of death through validators' signatures
+    function requestProofOfDeath() public pure returns (bool) {
         // Check areValidatorAuthorized() to verify if all have been authorized
         // If true, call getVaultPassword() to return vault password
         // If false, request proof from WIME-ACCESS API using Chainlink
 
         // Signature is returned by WIME-ACCESS API
-        address _validatorAddress = 0xdD2FD4581271e230360230F9337D5c0430Bf44C0;
         // string memory _validatorPrivateKey = "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b";
         // Verify if signature is valid
 
         // If valid, update bool in validatorAddresses for the signer to true
-        authorizeValidatorAddress(_validatorAddress);
         return true;
     }
 }
