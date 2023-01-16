@@ -1,102 +1,82 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.8/ChainlinkClient.sol";
+// import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.8/ChainlinkClient.sol";
+// import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract SecureFundTransfer {
-    // variable to store the vault password
-    bytes32 private vaultPassword;
+contract WimeSecure {
+    string private vaultPassword;
+    mapping(address => bool) private validatorAddresses;
+    string private WimeAccessAPIEndpoint;
+    address private ownerAddress;
 
-    // array to store the authorized addresses for multi-sig
-    mapping(string => bool) private authorizedAddressesForMultiSig;
+    // using Counters for Counters.Counter;
+    // Counters.Counter private jobId;
 
-    // variable to store the WIME-ACCESS API endpoint
-    string private WIME_ACCESS_API_Endpoint;
+    // ChainlinkClient oracle;
 
-    // variable to store the owner address
-    address private owner;
-
-    ChainlinkClient oracle;
-    bytes32 private jobId;
-
-    constructor(bytes32 _vaultPassword, string memory _WIME_ACCESS_API_Endpoint, address _oracle)
-        public
-    {
+    constructor(string memory _vaultPassword) {
         vaultPassword = _vaultPassword;
-        WIME_ACCESS_API_Endpoint = _WIME_ACCESS_API_Endpoint;
-        oracle = ChainlinkClient(_oracle);
-        owner = msg.sender;
+        // WimeAccessAPIEndpoint = _WimeAccessAPIEndpoint;
+        // oracle = ChainlinkClient(_oracle);
+        ownerAddress = msg.sender;
     }
 
-    // function to add validator
-    function addValidator(address _validator) public {
-        require(msg.sender == owner, "Unauthorized account");
-
-        // add the validator to the authorized addresses for multi-sig
-        authorizedAddressesForMultiSig.push(_validator);
-    }
-    
-    // TODO: function to trigger the transfer fund smart contract
-    function getDecryptedPassword(
-        address payable _recipient,
-        uint256 _value
-    ) public {
-        require(msg.sender == owner, "Unauthorized account");
-
-        // check that the smart contract is valid
-        require(
-            address(transferFundSmartContractAddress).isContract(),
-            "Invalid transfer fund smart contract address"
-        );
-
-        // return vault password
-    }
-    // TODO: function to request proof
-    function requestProof(address _validator) public {
-        require(msg.sender == owner, "Unauthorized account");
-
-        // call the WIME-ACCESS API to request proof
-        bytes memory proof = callAPI(
-            bytes4(keccak256("proof(address)")),
-            _validator
-        );
-
-        // verify the proof
-        require(verifyMultiSigSucceeded(proof), "Invalid proof");
-        // OR below?
-        // create the request
-        jobId = oracle.makeChainlinkRequest(
-            _endpoint,
-            address(this),
-            this.fulfill.selector
-        );
+    function getVaultPassword() public view returns (string memory) {
+        return vaultPassword;
     }
 
-    // function to verify signature
-    function verifySignature(address _validator, bytes32 _signature) public {
-        require(
-            msg.sender == authorizedAddressesForMultiSig,
-            "Unauthorized account"
-        );
-
-        // check if the validator is in the authorized addresses for multi-sig
-        require(validatorExists(_validator), "Unauthorized validator");
-
-        // TODO: verify the signature
-        require(
-            address(
-                uint160(keccak256(abi.encodePacked(_validator, vaultPassword)))
-            ).recover(_signature) == _validator,
-            "Invalid signature"
-        );
+    function getOwnerAddress() public view returns (address) {
+        return ownerAddress;
     }
-    // TODO: function to check if all validator called the smart contract
-    function verifyMultiSigSucceeded() private {
-        for (uint256 i = 0; i < authorizedAddressesForMultiSig.length; i++) {
-            if (!authorizedAddressesForMultiSig[i]) {
-                return false;
-            }
+
+    // Will be called in the event of death on WIME-ONE
+    // To verify caller is owner (financial institution)
+    function isOwner() public view returns (bool) {
+        return msg.sender == ownerAddress;
+    }
+
+    // Returns list of unauthorized validator addresses and isAuthorized
+    function areValidatorsAuthorized() public view returns (bool) {
+        // for (uint i = 0; i < validatorAddresses.length; i++) {
+        //     if (validatorAddresses[i][msg.sender] == false) {
+        //         return false;
+        //     }
+        // }
+        // return true;
+
+        return validatorAddresses[ownerAddress];
+
+        // WIME-ACCESS will request signatures from validators
+        // WIME-ACCESS will trigger this function by passing in the signatures
+        // WIME-SECURE then authorize each transaction
+        // Return vault password
+    }
+
+    function authorizeValidatorAddress(address _address) public {
+        // If true, update validatorAddresses with address and isAuthorized = true
+        validatorAddresses[_address] = true;
+    }
+
+    function requestVaultPassword() public returns (string memory) {
+        if (requestProof()) {
+            return getVaultPassword();
         }
+        return "Error";
+    }
+
+    function requestProof() public returns (bool) {
+        // Check areValidatorAuthorized() to verify if all have been authorized
+        // If true, call getVaultPassword() to return vault password
+        // If false, request proof from WIME-ACCESS API using Chainlink
+
+        // Signature is returned by WIME-ACCESS API
+        address _validatorAddress = 0xdD2FD4581271e230360230F9337D5c0430Bf44C0;
+        // string memory _validatorPrivateKey = "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b";
+        // Verify if signature is valid
+
+        // If valid, update bool in validatorAddresses for the signer to true
+        authorizeValidatorAddress(_validatorAddress);
         return true;
     }
 }
