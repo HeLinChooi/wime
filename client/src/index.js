@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { RouterProvider } from "react-router-dom";
 import router from "./util/routes";
 import { ThemeProvider, createTheme } from "@mui/material";
+import { WillProvider } from "./context/WillContext";
 
 const theme = createTheme({
   palette: {
@@ -18,7 +19,10 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <WillProvider>
+
+        <RouterProvider router={router} />
+      </WillProvider>
     </ThemeProvider>
   </React.StrictMode>
 );
