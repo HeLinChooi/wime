@@ -24,6 +24,12 @@ export class AppController {
     return this.appService.createWill(createWillDto);
   }
 
+  @ApiResponse({ status: 201, description: 'Will activated' })
+  @Post('activate-will')
+  activateWill(@Body() data: { ownerIcNumber: string }): Will {
+    return this.appService.activateWill(data.ownerIcNumber);
+  }
+
   // Vault
   @ApiResponse({ status: 200, description: 'Vault list' })
   @Get('get-vaults')

@@ -7,10 +7,23 @@ export class CreateWillDto {
   })
   ownerPubKey: string;
 
-  description: 'Beneficiaries public keys and percentage cut';
-  @ApiProperty({})
+  @ApiProperty({
+    description: 'Owner identification number',
+    type: 'string',
+  })
+  ownerIcNumber: string;
+
+  @ApiProperty({
+    description: 'Beneficiaries public keys and percentage cut',
+  })
   beneficiaries: {
     beneficiaryPubKey: string;
     percentage: number;
   }[];
+
+  @ApiProperty({
+    description: 'Will is active when owner is deceased',
+    type: 'boolean',
+  })
+  isActive: boolean;
 }
