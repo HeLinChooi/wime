@@ -27,8 +27,20 @@ const CreateWillPage = () => {
 
   const [beneficiaryNumber, setBeneficiaryNumber] = useState(1);
 
-  const onSubmit = (data) => {
+  const API_URL = "http://localhost:8000";
+  const onSubmit = async (data) => {
     console.log(data);
+    const message = await fetch(`${API_URL}/create-will`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        return data.message;
+      });
+    // .then((data) => {
+    //   return data.message;
+    // });
+    console.log(message);
   };
 
   return (

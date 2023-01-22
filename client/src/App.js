@@ -25,17 +25,17 @@ function App() {
   const StyledChip = styled(Chip)(() =>
     currentAccount
       ? {
-        backgroundColor: "limeGreen",
-        color: "white",
-        fontWeight: "bold",
-        float: "right",
-      }
+          backgroundColor: "limeGreen",
+          color: "white",
+          fontWeight: "bold",
+          float: "right",
+        }
       : {
-        backgroundColor: "crimson",
-        color: "white",
-        fontWeight: "bold",
-        float: "right",
-      }
+          backgroundColor: "crimson",
+          color: "white",
+          fontWeight: "bold",
+          float: "right",
+        }
   );
   return (
     <div className="App">
@@ -51,21 +51,23 @@ function App() {
         </Box>
         <StyledChip
           sx={{ mb: 2 }}
-          label={currentAccount ? "Wallet is Connected" : "Wallet is Disconnected"}
+          label={
+            currentAccount ? "Wallet is Connected" : "Wallet is Disconnected"
+          }
           size="small"
         ></StyledChip>
-        {
-          currentAccount ?
-            <Button variant="contained" onClick={() => navigate("/create-will")}>
-              Start to create will
-              <ArrowForwardIcon />
-            </Button> :
-            <>
-              <Button variant="contained" onClick={() => connectWallet()}>
-                Connect
-              </Button>
-            </>
-        }
+        {currentAccount ? (
+          <Button variant="contained" onClick={() => navigate("/create-will")}>
+            Start to create will
+            <ArrowForwardIcon />
+          </Button>
+        ) : (
+          <>
+            <Button variant="contained" onClick={() => connectWallet()}>
+              Connect
+            </Button>
+          </>
+        )}
       </header>
     </div>
   );
