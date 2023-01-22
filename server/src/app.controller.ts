@@ -3,11 +3,20 @@ import { AppService } from './app.service';
 import { CreateWillDto } from './dto/create-will.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Will } from './entities/will.entity';
+import { CreateVaultDto } from './dto/create-vault-password.dto';
+import { Vault } from './entities/vault.entity';
 
 @ApiTags('wills')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  // Will
+  @ApiResponse({ status: 200, description: 'Will list' })
+  @Get('get-wills')
+  getWills(): Will[] {
+    return this.appService.getWills();
+  }
 
   @ApiResponse({ status: 201, description: 'Will created' })
   @Post('create-will')
@@ -15,9 +24,16 @@ export class AppController {
     return this.appService.createWill(createWillDto);
   }
 
-  @ApiResponse({ status: 200, description: 'Will list' })
-  @Get('get-wills')
-  getWills(): Will[] {
-    return this.appService.getWills();
+  // Vault
+  @ApiResponse({ status: 200, description: 'Vault list' })
+  @Get('get-vaults')
+  getVaults(): Vault[] {
+    return this.appService.getVaults();
+  }
+
+  @ApiResponse({ status: 201, description: 'Vault created' })
+  @Post('create-vault')
+  createVaultPassword(@Body() createVaultDto: CreateVaultDto): Vault {
+    return this.appService.createVault(createVaultDto);
   }
 }

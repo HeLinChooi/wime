@@ -6,9 +6,9 @@ export class CreateWillDto {
     type: 'string',
   })
   ownerPubKey: string;
-  @ApiProperty({
-    description: 'Beneficiaries public keys and percentage cut',
-  })
+
+  description: 'Beneficiaries public keys and percentage cut';
+  @ApiProperty({})
   beneficiaries: {
     beneficiaryPubKey: string;
     percentage: number;
