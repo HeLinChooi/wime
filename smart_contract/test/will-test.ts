@@ -1,5 +1,5 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from "chai";
+import { ethers } from "hardhat";
 
 describe("Will", async function () {
   const _clientPubKey = "0xcd3B766CCDd6AE721141F452C550Ca635964ce71";
@@ -18,6 +18,9 @@ describe("Will", async function () {
   });
 
   it("Should transfer assets to beneficiary", async () => {
+    // console.log(ethers)
+    // const signer = await ethers.getSigner();
+    // console.log('signer', signer);
     const Will = await ethers.getContractFactory("Will");
     const will = await Will.deploy(
       _clientPubKey,

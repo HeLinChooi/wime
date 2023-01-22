@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
+import "hardhat/console.sol";
+
+// TODO: Make sure no private key stored on chain
 contract Will {
     struct Client {
         address payable pubKey;
-        address privKey;
+        // address privKey;
     }
 
     struct Beneficiary {
@@ -31,10 +34,27 @@ contract Will {
     }
 
     function distributeAssets() public payable returns (bool) {
-        uint256 totalAssets = msg.sender.balance;
-        uint256 amount = (beneficiary.distribution * totalAssets) / 100;
-        beneficiary.pubKey.transfer(amount);
-        isDistributed[client.pubKey] = true;
-        return isDistributed[client.pubKey];
+        // uint256 totalAssets = msg.sender.balance;
+        // console.log(msg.sender);
+        // console.log(totalAssets);
+        // uint256 amount = (beneficiary.distribution * totalAssets) / 100;
+        // console.log(
+        //     "Transferring from %s to %s %s wei",
+        //     msg.sender,
+        //     beneficiary.pubKey,
+        //     amount
+        // );
+        // beneficiary.pubKey.transfer(amount);
+        // isDistributed[beneficiary.pubKey] = true;
+        // return isDistributed[beneficiary.pubKey];
+        require(beneficiary.pubKey != address(0), "Beneficiary address must be a valid address");
+        console.log(
+            "Transferring from %s to %s %s wei",
+            msg.sender,
+            beneficiary.pubKey,
+            10
+        );
+        beneficiary.pubKey.transfer(10);
+        return true;
     }
 }
