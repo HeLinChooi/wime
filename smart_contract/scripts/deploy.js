@@ -28,7 +28,11 @@ async function main() {
   const _beneficiaryPubKey = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
   const _beneficiaryDistribution = "100";
   const Will = await ethers.getContractFactory("Will");
-  const will = await Will.deploy(_beneficiaryPubKey, _beneficiaryDistribution);
+  const will = await Will.deploy(
+    _clientPubKey,
+    _beneficiaryPubKey,
+    _beneficiaryDistribution
+  );
   await will.deployed();
   console.log("Will deployed to: " + will.address);
 }
