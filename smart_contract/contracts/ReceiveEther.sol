@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 
+// https://www.youtube.com/watch?v=1eyyvsGBHe8
 contract ReceiveEther {
     mapping(address => uint256) public accountBalances;
 
