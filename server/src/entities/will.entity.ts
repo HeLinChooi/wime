@@ -18,4 +18,10 @@ export class Will {
 
   @ApiProperty()
   isActive: boolean;
+
+  @ApiProperty()
+  validators: {
+    validatorPubKey: string;
+    isValidated: boolean;
+  }[];
 }

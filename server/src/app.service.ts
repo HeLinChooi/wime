@@ -20,6 +20,12 @@ export class AppService {
         },
       ],
       isActive: false,
+      validators: [
+        {
+          validatorPubKey: '0x123456789',
+          isValidated: false,
+        },
+      ],
     },
   ];
 
@@ -27,10 +33,10 @@ export class AppService {
     return this.wills;
   }
 
-  createWill(will: CreateWillDto): Will {
+  createWill(_will: CreateWillDto): Will {
     const newWill = {
       id: Date.now(),
-      ...will,
+      ..._will,
       isActive: false,
     };
 
@@ -39,14 +45,27 @@ export class AppService {
   }
 
   activateWill(_ownerIcNumber: string): Will {
-    const ownerIcNumber = _ownerIcNumber;
     const will: Will = this.wills.find(
       (will) => will.ownerIcNumber === _ownerIcNumber,
     );
     if (will) {
       will.isActive = true;
     }
-    console.log(ownerIcNumber);
+    return will;
+  }
+
+  validateWill(_ownerIcNumber: string, _validatorPubKey: string): Will {
+    const will: Will = this.wills.find(
+      (will) => will.ownerIcNumber === _ownerIcNumber,
+    );
+    if (will) {
+      const validator = will.validators.find(
+        (validator) => validator.validatorPubKey === _validatorPubKey,
+      );
+      if (validator) {
+        validator.isValidated = true;
+      }
+    }
     return will;
   }
 
@@ -63,10 +82,10 @@ export class AppService {
     return this.vaults;
   }
 
-  createVault(vault: CreateVaultDto): Vault {
+  createVault(_vault: CreateVaultDto): Vault {
     const newVault = {
       id: Date.now(),
-      ...vault,
+      ..._vault,
     };
 
     this.vaults.push(newVault);

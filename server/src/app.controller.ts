@@ -30,6 +30,17 @@ export class AppController {
     return this.appService.activateWill(data.ownerIcNumber);
   }
 
+  @ApiResponse({ status: 201, description: 'Will validated' })
+  @Post('validate-will')
+  validateWill(
+    @Body() data: { ownerIcNumber: string; validatorPubKey: string },
+  ): Will {
+    return this.appService.validateWill(
+      data.ownerIcNumber,
+      data.validatorPubKey,
+    );
+  }
+
   // Vault
   @ApiResponse({ status: 200, description: 'Vault list' })
   @Get('get-vaults')
