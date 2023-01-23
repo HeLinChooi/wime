@@ -14,16 +14,20 @@ describe("ReceiveEther", function () {
     // Deploy the contract
     myContract = await ReceiveEther.deploy();
   });
+
   it("Should send ether to the contract and update the account balance mapping", async () => {
     // const provider = providers.getDefaultProvider();
     const provider = ethers.provider;
     const latestBlock = await ethers.provider.getBlock("latest");
     console.log('latestBlock', latestBlock);
     expect(await provider.getBalance(myContract.address)).to.equal(0);
+
+    console.log('address1', address1);
     await address1.sendTransaction({
       to: myContract.address,
       value: 100,
     });
     expect(await provider.getBalance(myContract.address)).to.equal(100);
+    expect(await myContract.getAccountBalances(address1.address)).to.equal(100);
   });
 });
