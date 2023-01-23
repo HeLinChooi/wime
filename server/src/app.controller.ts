@@ -41,6 +41,26 @@ export class AppController {
     );
   }
 
+  // Asset
+  @ApiResponse({ status: 201, description: 'Asset transferred' })
+  @Post('transfer-assets')
+  transferAssets(
+    @Body()
+    data: {
+      toPubKey: string;
+      fromPubKey: string;
+      fromPrivKey: string;
+      amount: number;
+    },
+  ) {
+    return this.appService.transferAssets(
+      data.toPubKey,
+      data.fromPubKey,
+      data.fromPrivKey,
+      data.amount,
+    );
+  }
+
   // Vault
   @ApiResponse({ status: 200, description: 'Vault list' })
   @Get('get-vaults')

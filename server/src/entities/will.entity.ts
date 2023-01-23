@@ -20,6 +20,9 @@ export class Will {
   isActive: boolean;
 
   @ApiProperty()
+  isAssetsTransferred: boolean;
+
+  @ApiProperty()
   validators: {
     validatorPubKey: string;
     isValidated: boolean;

@@ -3,6 +3,7 @@ import { Will } from './entities/will.entity';
 import { CreateWillDto } from './dto/create-will.dto';
 import { Vault } from './entities/vault.entity';
 import { CreateVaultDto } from './dto/create-vault-password.dto';
+import { Tx } from './entities/tx.entity';
 
 @Injectable()
 export class AppService {
@@ -20,6 +21,7 @@ export class AppService {
         },
       ],
       isActive: false,
+      isAssetsTransferred: false,
       validators: [
         {
           validatorPubKey: '0x123456789',
@@ -38,6 +40,7 @@ export class AppService {
       id: Date.now(),
       ..._will,
       isActive: false,
+      isAssetsTransferred: false,
     };
 
     this.wills.push(newWill);
@@ -67,6 +70,28 @@ export class AppService {
       }
     }
     return will;
+  }
+
+  // Asset
+  private tx: Tx = {
+    fromPubKey: '',
+    toPubKey: '',
+    amount: '',
+    gasLimit: '0x100000',
+    gasPrice: '100',
+  };
+
+  transferAssets(
+    _toPubKey: string,
+    _fromPubKey: string,
+    _fromPrivKey: string,
+    _amount: number,
+  ): Tx {
+    this.tx.fromPubKey = _fromPubKey;
+    this.tx.toPubKey = _toPubKey;
+    this.tx.amount = _amount.toString();
+
+    return this.tx;
   }
 
   // Vault
