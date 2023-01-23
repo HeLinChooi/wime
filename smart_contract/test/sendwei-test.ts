@@ -3,20 +3,24 @@ import { ethers } from "hardhat";
 import { Contract } from "ethers";
 
 describe("SendWei", () => {
-  let myContract: Contract;
+  
+  // beforeEach(async () => {
+  //     // Get the contract factory
+  //     const SendWei = await ethers.getContractFactory("SendWei");
 
-  beforeEach(async () => {
-      // Get the contract factory
+  //     // Deploy the contract
+  //     myContract = await SendWei.deploy();
+  // });
+
+  it("should send 10 wei to an address", async () => {
+      let myContract: Contract;
       const SendWei = await ethers.getContractFactory("SendWei");
 
       // Deploy the contract
       myContract = await SendWei.deploy();
-  });
-
-    it("should send 10 wei to an address", async () => {
         // Define the recipient address
         const recipient = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
-        const amount = -10;
+        const amount = 10;
 
         // Get the initial balance of the recipient
         const signer = await ethers.getSigner(recipient);
