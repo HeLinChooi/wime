@@ -7,15 +7,20 @@ contract SendWei {
     uint256 unlessNumber;
     address payable public owner;
 
-    constructor(uint256 _unlessNumber) payable {
-        unlessNumber = _unlessNumber;
+    constructor(uint256 _endowment) payable {
+        require(msg.value == _endowment, "The ether sent should be the same as parameter sent!");
+        unlessNumber = _endowment;
         owner = payable(msg.sender);
     }
 
-    function sendWei(address payable recipient, uint256 amount) public {
-        require(amount > 0, "Amount must be greater than 0");
+    function sendWei(address payable recipient) public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
         console.log("address(this).balance", address(this).balance);
-        owner.transfer(amount);
+        recipient.transfer(msg.value);
         // recipient.transfer(amount);
+    }
+    
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }
