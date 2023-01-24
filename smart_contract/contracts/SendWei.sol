@@ -15,7 +15,6 @@ contract SendWei {
 
     function sendWei(address payable recipient) public payable {
         require(msg.value > 0, "Amount must be greater than 0");
-        console.log("address(this).balance", address(this).balance);
         recipient.transfer(msg.value);
         // recipient.transfer(amount);
     }

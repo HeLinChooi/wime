@@ -3,11 +3,9 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 
-// TODO: Make sure no private key stored on chain
 contract Will {
     struct Client {
         address payable pubKey;
-        // address privKey;
     }
 
     struct Beneficiary {
@@ -22,8 +20,13 @@ contract Will {
     constructor(
         address payable _clientPubKey,
         address payable _beneficiaryPubKey,
-        uint256 _beneficiaryDistribution
-    ) {
+        uint256 _beneficiaryDistribution,
+        uint256 _endowment
+    ) payable {
+        require(
+            msg.value == _endowment,
+            "The ether sent should be the same as parameter sent!"
+        );
         client.pubKey = _clientPubKey;
         beneficiary.pubKey = _beneficiaryPubKey;
         beneficiary.distribution = _beneficiaryDistribution;
@@ -33,28 +36,32 @@ contract Will {
         return beneficiary.pubKey;
     }
 
-    function distributeAssets() public payable returns (bool) {
+    function distributeAssets(uint256 clientBalance)
+        public
+        payable
+    {
+        require(
+            msg.value == clientBalance,
+            "The ether sent should be the same as parameter sent!"
+        );
+
         // uint256 totalAssets = msg.sender.balance;
-        // console.log(msg.sender);
-        // console.log(totalAssets);
-        // uint256 amount = (beneficiary.distribution * totalAssets) / 100;
-        // console.log(
-        //     "Transferring from %s to %s %s wei",
-        //     msg.sender,
-        //     beneficiary.pubKey,
-        //     amount
-        // );
-        // beneficiary.pubKey.transfer(amount);
-        // isDistributed[beneficiary.pubKey] = true;
-        // return isDistributed[beneficiary.pubKey];
-        require(beneficiary.pubKey != address(0), "Beneficiary address must be a valid address");
+        uint256 amount = (beneficiary.distribution * msg.value) / 100;
+        isDistributed[beneficiary.pubKey] = true;
+        require(
+            beneficiary.pubKey != address(0),
+            "Beneficiary address must be a valid address"
+        );
         console.log(
             "Transferring from %s to %s %s wei",
             msg.sender,
             beneficiary.pubKey,
-            10
+            amount
         );
-        beneficiary.pubKey.transfer(10);
-        return true;
+        beneficiary.pubKey.transfer(amount);
+    }
+
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }
