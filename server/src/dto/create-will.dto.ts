@@ -22,12 +22,6 @@ export class CreateWillDto {
   }[];
 
   @ApiProperty({
-    description: 'Will active status. Is set to active when owner is deceased',
-    type: 'boolean',
-  })
-  isActive: boolean;
-
-  @ApiProperty({
     description: 'Validators public keys',
   })
   validators: {

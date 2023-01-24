@@ -2,10 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class Tx {
   @ApiProperty()
-  fromPubKey: string;
+  contractAddress: string;
 
   @ApiProperty()
   toPubKey: string;
+
+  @ApiProperty()
+  fromPubKey: string;
+
+  @ApiProperty()
+  fromPrivKey: string;
 
   @ApiProperty()
   amount: string;

@@ -47,13 +47,15 @@ export class AppController {
   transferAssets(
     @Body()
     data: {
+      contractAddress: string;
       toPubKey: string;
       fromPubKey: string;
       fromPrivKey: string;
-      amount: number;
+      amount: string;
     },
   ) {
     return this.appService.transferAssets(
+      data.contractAddress,
       data.toPubKey,
       data.fromPubKey,
       data.fromPrivKey,

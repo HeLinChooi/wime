@@ -4,6 +4,13 @@ import { CreateWillDto } from './dto/create-will.dto';
 import { Vault } from './entities/vault.entity';
 import { CreateVaultDto } from './dto/create-vault-password.dto';
 import { Tx } from './entities/tx.entity';
+import { ethers } from 'ethers';
+
+declare global {
+  interface Window {
+    ethereum: any;
+  }
+}
 
 @Injectable()
 export class AppService {
@@ -74,24 +81,57 @@ export class AppService {
 
   // Asset
   private tx: Tx = {
-    fromPubKey: '',
+    contractAddress: '',
     toPubKey: '',
+    fromPubKey: '',
+    fromPrivKey: '',
     amount: '',
-    gasLimit: '0x100000',
-    gasPrice: '100',
+    gasLimit: 'defaultValue',
+    gasPrice: 'defaultValue',
   };
 
   transferAssets(
+    _contractAddress: string,
     _toPubKey: string,
     _fromPubKey: string,
     _fromPrivKey: string,
-    _amount: number,
-  ): Tx {
+    _amount: string,
+  ): any {
+    this.tx.contractAddress = _contractAddress;
     this.tx.fromPubKey = _fromPubKey;
+    this.tx.fromPrivKey = _fromPrivKey;
     this.tx.toPubKey = _toPubKey;
-    this.tx.amount = _amount.toString();
+    this.tx.amount = _amount;
 
-    return this.tx;
+    this.sendToken(this.tx);
+
+    return {
+      tx: this.tx,
+    };
+  }
+
+  async sendToken(tx: Tx) {
+    const provider = new ethers.providers.JsonRpcProvider(
+      'http://127.0.0.1:8545',
+    );
+    console.log(tx);
+    const wallet = new ethers.Wallet(tx.fromPrivKey, provider);
+    // let walletSigner = wallet.connect(provider);
+
+    provider.getGasPrice().then((currentGasPrice) => {
+      const gasPrice = ethers.utils.hexlify(currentGasPrice).toString();
+      tx.gasPrice = gasPrice;
+    });
+
+    const newTx = await wallet.sendTransaction({
+      to: tx.toPubKey,
+      value: ethers.utils.parseEther(tx.amount),
+    });
+
+    await newTx.wait();
+    const senderBalance = await provider.getBalance(tx.fromPubKey);
+    const recipientBalance = await provider.getBalance(tx.toPubKey);
+    console.log(newTx);
   }
 
   // Vault
