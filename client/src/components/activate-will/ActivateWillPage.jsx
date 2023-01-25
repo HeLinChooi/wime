@@ -16,8 +16,26 @@ const ActivateWillPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
+  
+  const API_URL = "http://localhost:8000";
+  const onSubmit = async (data) => {
     console.log(data);
+    // Contruct request options
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "ownerIcNumber": data.ownerIcNumber
+    }),
+    };
+    const response = await fetch(`${API_URL}/activate-will`, requestOptions)
+      .then((res) => {
+        return res.json();
+      })
+    console.log(response);
+    if(response.isActive){
+      
+    }
   };
 
   return (
@@ -55,12 +73,12 @@ const ActivateWillPage = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                error={!!errors.password}
+                error={!!errors.ownerIcNumber}
                 helperText="This field is required"
                 fullWidth
                 label="Identity Number"
                 variant="outlined"
-                {...register("password", { required: true })}
+                {...register("ownerIcNumber", { required: true })}
               />
             </Grid>
             <Grid item xs={12}>

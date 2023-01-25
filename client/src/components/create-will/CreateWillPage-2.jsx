@@ -1,10 +1,7 @@
 import {
   Box,
   Button,
-  Container,
   Grid,
-  Paper,
-  styled,
   TextField,
   Typography,
 } from "@mui/material";
@@ -13,6 +10,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import AddIcon from "@mui/icons-material/Add";
 import beneficiaryImg from "../../assets/beneficiary.png";
+import { useWillContext } from "../../context/WillContext";
 
 function createArrayWithNumbers(length) {
   return Array.from({ length }, (_, i) => i);
@@ -26,64 +24,46 @@ const CreateWillPage = () => {
   } = useForm();
 
   const [beneficiaryNumber, setBeneficiaryNumber] = useState(1);
+  const [validatorNumber, setValidatorNumber] = useState(1);
+  const { validators } = useWillContext();
 
   const API_URL = "http://localhost:8000";
   const onSubmit = async (data) => {
-    console.log(data);
-
+    console.log("data", data);
+    const { validatorsAddress } = data;
     // Contruct request options
+    const requestBody = {
+      "ownerPubKey": data.ownerPubKey,
+      "ownerIcNumber": data.ownerIcNumber,
+      "beneficiaries": [
+        {
+          "beneficiaryPubKey": data.address[0],
+          "percentage": data.percentage[0]
+        }
+      ],
+      "validators": validatorsAddress.map(address =>
+      ({
+        "validatorPubKey": address,
+        "isValidated": false
+      }))
+      ,
+      "ownerPrivKey": data.ownerPrivKey
+    };
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        "ownerPubKey": data.ownerPubKey,
-        "ownerIcNumber": data.ownerIcNumber,
-        "beneficiaries": [
-          {
-            "beneficiaryPubKey": data.address[0],
-            "percentage": data.percentage[0]
-          }
-        ],
-        "validators": [
-          {
-            "validatorPubKey": "0x123456789",
-            "isValidated": false
-          }
-        ],
-        "ownerPrivKey": data.ownerPrivKey
-      }),
+      body: JSON.stringify(requestBody),
     };
-    const message = await fetch(`${API_URL}/create-will`, requestOptions)
+    console.log("requestBody", requestBody)
+    const response = await fetch(`${API_URL}/create-will`, requestOptions)
       .then((res) => {
         return res.json();
       })
-      .then((data) => {
-        return data.message;
-      });
-    // .then((data) => {
-    //   return data.message;
-    // });
-    console.log(message);
+    console.log(response);
   };
 
   return (
     <>
-      {/* <Container
-        maxWidth="sm"
-        sx={{
-          marginY: 2,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          sx={{
-            // width: 600,
-            // height: 300,
-            // backgroundColor: "primary.dark",
-          }}
-        > */}
       <Grid
         container
         spacing={2}
@@ -93,17 +73,18 @@ const CreateWillPage = () => {
       // rowSpacing={2}
       // columnSpacing={{ xs: 1, sm: 2, md: 2 }}
       >
-        <Grid item xs={12}>
-            <Typography variant="h5" component="h2">
-              Create Will
-            </Typography>
+        <Grid item xs={3}></Grid>
+        <Grid item xs={6}>
+          <Typography variant="h5" component="h2">
+            Create Will
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Box display="flex" justifyContent="center" alignItems="center">
             <img src={beneficiaryImg} alt="" height="200px" />
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} container spacing={2}>
 
           <Grid item xs={12}>
             <TextField
@@ -135,8 +116,31 @@ const CreateWillPage = () => {
               {...register("ownerPrivKey", { required: true })}
             />
           </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={() => setValidatorNumber(validatorNumber + 1)}
+            >
+              <AddIcon />
+              <span>Validators</span>
+            </Button>
+          </Grid>
+          {createArrayWithNumbers(validatorNumber).map((index) => (
+            <React.Fragment key={`validators${index}`}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  id="outlined-basic"
+                  label={"Validator Address " + (index + 1)}
+                  variant="outlined"
+                  {...register(`validatorsAddress.${index}`)}
+                />
+              </Grid>
+            </React.Fragment>
+          ))}
         </Grid>
-        <Grid item container xs={12} md={6} rowSpacing={2}>
+
+        <Grid item container xs={12} md={6} spacing={2} alignItems="flex-start">
 
           <Grid item xs={12}>
             <Button
@@ -149,7 +153,7 @@ const CreateWillPage = () => {
           </Grid>
           {createArrayWithNumbers(beneficiaryNumber).map((index) => (
             <React.Fragment key={`beneficiary${index}`}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   id="outlined-basic"
@@ -158,7 +162,7 @@ const CreateWillPage = () => {
                   {...register(`address.${index}`)}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
                   id="outlined-basic"
@@ -173,7 +177,8 @@ const CreateWillPage = () => {
           ))}
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={4}></Grid>
+        <Grid item xs={4}>
           <Button
             fullWidth
             variant="contained"

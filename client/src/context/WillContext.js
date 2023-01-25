@@ -1,28 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
-import { willContractABI, willContractAddress } from "../util/constants";
-
-export const WillContext = React.createContext();
+const WillContext = React.createContext();
 
 const { ethereum } = window;
 
-const createEthereumContract = () => {
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const signer = provider.getSigner();
-  const willContract = new ethers.Contract(
-    willContractAddress,
-    willContractABI,
-    signer
-  );
-
-  return willContract;
-};
-
-export const WillProvider = ({ children }) => {
+const WillProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
+  const [validators, setValidators] = useState([]);
 
   const checkIfWalletIsConnect = async () => {
     try {
@@ -79,18 +66,15 @@ export const WillProvider = ({ children }) => {
     }
   };
 
-  const transferAssets = async () => {
-    try {
-      if (ethereum) {
-        const willContract = createEthereumContract();
-
-        await willContract.distributeAssets();
-      } else {
-        console.log("Ethereum is not present");
+  const validate = async (validatorPubKey) => {
+    let tempValidators = validators.map(validator => ({...validator}));
+    tempValidators = tempValidators.map(v => {
+      if(v.validatorPubKey === validatorPubKey){
+        v.isValidated = true;
       }
-    } catch (error) {
-      console.log(error);
-    }
+      return v;
+    })
+    setValidators(tempValidators)
   }
 
 
@@ -103,11 +87,17 @@ export const WillProvider = ({ children }) => {
       value={{
         connectWallet,
         isLoading,
-        transferAssets,
+        validate,
         currentAccount,
+        validators,
       }}
     >
       {children}
     </WillContext.Provider>
   );
 };
+const useWillContext = () => {
+  return React.useContext(WillContext);
+};
+
+export { WillProvider, useWillContext, WillContext };
