@@ -28,4 +28,10 @@ export class CreateWillDto {
     validatorPubKey: string;
     isValidated: boolean;
   }[];
+
+  @ApiProperty({
+    description: 'Owner wallet private key',
+    type: 'string',
+  })
+  ownerPrivKey: string;
 }

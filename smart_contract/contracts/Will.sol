@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "hardhat/console.sol";
 
 contract Will {
-    struct Client {
+    struct Owner {
         address payable pubKey;
     }
 
@@ -14,11 +14,11 @@ contract Will {
     }
 
     Beneficiary public beneficiary;
-    Client public client;
+    Owner public owner;
     mapping(address => bool) public isDistributed;
 
     constructor(
-        address payable _clientPubKey,
+        address payable _ownerPubKey,
         address payable _beneficiaryPubKey,
         uint256 _beneficiaryDistribution,
         uint256 _endowment
@@ -27,7 +27,7 @@ contract Will {
             msg.value == _endowment,
             "The ether sent should be the same as parameter sent!"
         );
-        client.pubKey = _clientPubKey;
+        owner.pubKey = _ownerPubKey;
         beneficiary.pubKey = _beneficiaryPubKey;
         beneficiary.distribution = _beneficiaryDistribution;
     }
@@ -36,12 +36,16 @@ contract Will {
         return beneficiary.pubKey;
     }
 
-    function distributeAssets(uint256 clientBalance)
+    function distributeAssets(uint256 ownerBalance)
         public
         payable
     {
         require(
-            msg.value == clientBalance,
+            msg.sender == owner.pubKey,
+            "You aren't the owner"
+        );
+        require(
+            msg.value == ownerBalance,
             "The ether sent should be the same as parameter sent!"
         );
 
