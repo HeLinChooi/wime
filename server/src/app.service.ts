@@ -4,7 +4,8 @@ import { CreateWillDto } from './dto/create-will.dto';
 import { Vault } from './entities/vault.entity';
 import { CreateVaultDto } from './dto/create-vault-password.dto';
 import { Tx } from './entities/tx.entity';
-import { ethers } from 'ethers';
+import { ethers, ContractFactory } from 'ethers';
+import { contractABI, contractByteCode } from './utils/constants';
 
 declare global {
   interface Window {
@@ -14,7 +15,7 @@ declare global {
 
 @Injectable()
 export class AppService {
-  // Will
+  // Will smart contract
   // Sample initialized data
   private wills: Will[] = [
     {
@@ -35,6 +36,7 @@ export class AppService {
           isValidated: false,
         },
       ],
+      contract: null,
     },
   ];
 
@@ -42,23 +44,54 @@ export class AppService {
     return this.wills;
   }
 
-  createWill(_will: CreateWillDto): Will {
+  async createWill(_will: CreateWillDto): Promise<Will> {
+    const provider = new ethers.providers.JsonRpcProvider(
+      'http://127.0.0.1:8545',
+    );
+    const clientPrivKey =
+      '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+    const _clientPubKey = '0xcd3b766ccdd6ae721141f452c550ca635964ce71';
+    const _beneficiaryPubKey = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+    const _beneficiaryDistribution = '100';
+    const oneETH = 1;
+    const wallet = new ethers.Wallet(clientPrivKey, provider);
+    const account = wallet.connect(provider);
+    const factory = new ContractFactory(contractABI, contractByteCode,account);
+
+    // If your contract requires constructor args, you can specify them here
+    const willContract = await factory.deploy(
+      _clientPubKey,
+      _beneficiaryPubKey,
+      _beneficiaryDistribution,
+      ethers.utils.parseEther(oneETH.toString()),
+      { value: ethers.utils.parseEther(oneETH.toString()) },
+    );
+
+    console.log(willContract.address);
+    console.log(willContract.deployTransaction);
     const newWill = {
       id: Date.now(),
       ..._will,
       isActive: false,
       isAssetsTransferred: false,
+      contract: willContract
     };
 
     this.wills.push(newWill);
     return newWill;
   }
 
-  activateWill(_ownerIcNumber: string): Will {
+  async activateWill(_ownerIcNumber: string): Promise<Will> {
     const will: Will = this.wills.find(
       (will) => will.ownerIcNumber === _ownerIcNumber,
     );
-    if (will) {
+
+    if (will && !will.isActive) {
+      const transferAmountInETH = 2;
+      const amount = ethers.utils.parseEther(transferAmountInETH.toString());
+      await will.contract.distributeAssets(amount, {
+        value: amount,
+      });
       will.isActive = true;
     }
     return will;

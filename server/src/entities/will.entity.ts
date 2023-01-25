@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Contract } from 'ethers';
 
 export class Will {
   @ApiProperty()
@@ -27,4 +28,7 @@ export class Will {
     validatorPubKey: string;
     isValidated: boolean;
   }[];
+
+  @ApiProperty()
+  contract: Contract
 }

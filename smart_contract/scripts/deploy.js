@@ -13,25 +13,29 @@ const _validatorPubKey = "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199";
 const _validatorIsAuthorized = true;
 
 async function main() {
-  const WimeSecure = await hre.ethers.getContractFactory("WimeSecure");
-  const wimeSecure = await WimeSecure.deploy(
-    _vaultPassword,
-    _ownerPubKey,
-    _clientPubKey,
-    _clientIcNumber,
-    _validatorPubKey,
-    _validatorIsAuthorized
-  );
-  await wimeSecure.deployed();
-  console.log("WimeSecure deployed to: " + wimeSecure.address);
+  // const WimeSecure = await hre.ethers.getContractFactory("WimeSecure");
+  // const wimeSecure = await WimeSecure.deploy(
+  //   _vaultPassword,
+  //   _ownerPubKey,
+  //   _clientPubKey,
+  //   _clientIcNumber,
+  //   _validatorPubKey,
+  //   _validatorIsAuthorized
+  // );
+  // await wimeSecure.deployed();
+  // console.log("WimeSecure deployed to: " + wimeSecure.address);
 
   const _beneficiaryPubKey = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
   const _beneficiaryDistribution = "100";
+  const oneETH = 1;
+
   const Will = await ethers.getContractFactory("Will");
   const will = await Will.deploy(
     _clientPubKey,
     _beneficiaryPubKey,
-    _beneficiaryDistribution
+    _beneficiaryDistribution,
+    ethers.utils.parseEther(oneETH.toString()),
+    { value: ethers.utils.parseEther(oneETH.toString()) }
   );
   await will.deployed();
   console.log("Will deployed to: " + will.address);
