@@ -31,4 +31,7 @@ export class Will {
 
   @ApiProperty()
   contract: Contract
+
+  @ApiProperty()
+  salt: string
 }

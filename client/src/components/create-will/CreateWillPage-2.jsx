@@ -71,18 +71,18 @@ const CreateWillPage = () => {
     };
     console.log("requestBody", requestBody)
     const response = await fetch(`${API_URL}/create-will`, requestOptions)
-    .then((res) => {
-      console.log(res)
-      return res.json();
-    })
-    console.log(response);
+    if (response.ok) {
+      const responseBody = await response.json();
+      console.log("responseBody", responseBody);
 
-    // If succeeded
-    // Save will details
-    const { ownerPrivKey, ...otherDetailsExceptPrivKey } = requestBody;
-    setSubmitted(true);
-    handleClickOpen();
-    setWillDetails({...otherDetailsExceptPrivKey, contractAddress: response.contract.address});
+      // Save will details
+      const { ownerPrivKey, ...otherDetailsExceptPrivKey } = requestBody;
+      setSubmitted(true);
+      handleClickOpen();
+      setWillDetails({ ...otherDetailsExceptPrivKey, contractAddress: responseBody.contract.address, salt: responseBody.salt });
+    } else {
+      alert("Something went wrong. Please try again.")
+    }
   };
 
   return (
@@ -105,7 +105,7 @@ const CreateWillPage = () => {
         >
           {
             submitted ? <Grid item xs={12}>
-              <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress}!</Alert>
+              <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress} with salt value {willDetails.salt}.</Alert>
             </Grid> : <></>
           }
           <Grid item xs={6}>
@@ -244,10 +244,10 @@ const CreateWillPage = () => {
           <DialogTitle id="alert-dialog-title">
             <Grid container direction="column" alignItems="center">
               <Grid item>
-                <CheckCircleIcon sx={{ fontSize: "80px", color: "green" }}/>
+                <CheckCircleIcon sx={{ fontSize: "80px", color: "green" }} />
               </Grid>
-              <Grid item sx={{textAlign:"center"}}>
-              {`Will Smart Contract deployed at address ${willDetails.contractAddress}!`}
+              <Grid item sx={{ textAlign: "center" }}>
+                {`Will Smart Contract deployed at address ${willDetails.contractAddress} with salt value ${willDetails.salt}.`}
               </Grid>
             </Grid>
           </DialogTitle>
