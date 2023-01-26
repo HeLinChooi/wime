@@ -13,6 +13,14 @@ contract Will {
         uint256 distribution;
     }
 
+    // struct Validator {
+    //     address pubKey;
+    //     bool authorized;
+    // }
+
+    mapping(address => bool) public authorizedAddressesForMultiSig;
+    address[] validatorAddresses;
+
     Beneficiary public beneficiary;
     Owner public owner;
     mapping(address => bool) public isDistributed;
@@ -21,7 +29,8 @@ contract Will {
         address payable _ownerPubKey,
         address payable _beneficiaryPubKey,
         uint256 _beneficiaryDistribution,
-        uint256 _endowment
+        uint256 _endowment,
+        address[] memory _validatorAddresses
     ) payable {
         require(
             msg.value == _endowment,
@@ -30,24 +39,53 @@ contract Will {
         owner.pubKey = _ownerPubKey;
         beneficiary.pubKey = _beneficiaryPubKey;
         beneficiary.distribution = _beneficiaryDistribution;
+        for (uint256 i = 0; i < _validatorAddresses.length; i++) {
+            authorizedAddressesForMultiSig[_validatorAddresses[i]] = false;
+        }
+        validatorAddresses = _validatorAddresses;
+    }
+
+    function validate() public payable {
+        require(
+            validatorAddresses.length > 0,
+            "Validator addresses have not been set"
+        );
+        console.log("msg.sender is", msg.sender);
+        for (uint256 i = 0; i < validatorAddresses.length; i++) {
+            console.log("validatorAddresses[i]", validatorAddresses[i]);
+            if (msg.sender == validatorAddresses[i]) {
+                authorizedAddressesForMultiSig[msg.sender] = true;
+                console.log(
+                    "authorizedAddressesForMultiSig[msg.sender] ",
+                    authorizedAddressesForMultiSig[msg.sender]
+                );
+                return;
+            }
+        }
+        revert("You aren't one of the validators");
     }
 
     function getBeneficiary() public view returns (address) {
         return beneficiary.pubKey;
     }
 
-    function distributeAssets(uint256 ownerBalance)
-        public
-        payable
-    {
-        require(
-            msg.sender == owner.pubKey,
-            "You aren't the owner"
-        );
+    function getValidators() public view returns (address[] memory) {
+        return validatorAddresses;
+    }
+
+    function distributeAssets(uint256 ownerBalance) public payable {
+        require(msg.sender == owner.pubKey, "You aren't the owner");
         require(
             msg.value == ownerBalance,
             "The ether sent should be the same as parameter sent!"
         );
+        for (uint256 i = 0; i < validatorAddresses.length; i++) {
+            if (
+                authorizedAddressesForMultiSig[validatorAddresses[i]] == false
+            ) {
+                revert("All validators have yet approve the assets transfer");
+            }
+        }
 
         // uint256 totalAssets = msg.sender.balance;
         uint256 amount = (beneficiary.distribution * msg.value) / 100;
