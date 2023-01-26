@@ -76,7 +76,7 @@ describe("Will", async function () {
       );
       
       // Validator 1 approve the asset transfer
-      const validateTx = await will.connect(validator1).validate();
+      const validateTx = await will.connect(validator1).validate({gasLimit: 55000});
       // Wait for the transaction to be mined
       await validateTx.wait();
 
@@ -99,7 +99,7 @@ describe("Will", async function () {
       );
       
       // Validator 1 approve the asset transfer
-      const validateTx = await will.connect(validator1).validate();
+      const validateTx = await will.connect(validator1).validate({gasLimit: 55000});
       // Wait for the transaction to be mined
       await validateTx.wait();
       // Validator 2 approve the asset transfer

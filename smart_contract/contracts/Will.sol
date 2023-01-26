@@ -13,11 +13,6 @@ contract Will {
         uint256 distribution;
     }
 
-    // struct Validator {
-    //     address pubKey;
-    //     bool authorized;
-    // }
-
     mapping(address => bool) public authorizedAddressesForMultiSig;
     address[] validatorAddresses;
 
@@ -50,6 +45,8 @@ contract Will {
             validatorAddresses.length > 0,
             "Validator addresses have not been set"
         );
+        // QUES: really becuz of revert at the end?
+        // revert("testing revert if there will be a message");
         console.log("msg.sender is", msg.sender);
         for (uint256 i = 0; i < validatorAddresses.length; i++) {
             console.log("validatorAddresses[i]", validatorAddresses[i]);

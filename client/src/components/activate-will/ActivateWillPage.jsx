@@ -117,6 +117,7 @@ const ActivateWillPage = () => {
                 // defaultValue="1234"
                 {...register("ownerIcNumber", { required: true })}
                 disabled={!willCreated || willActivated}
+                defaultValue="1234"
               />
             </Grid>
             <Grid item xs={12}>
@@ -128,6 +129,7 @@ const ActivateWillPage = () => {
                 variant="outlined"
                 {...register("randomKey", { required: true })}
                 disabled={!willCreated || willActivated}
+                defaultValue="9a001906-e239-40e4-bdb1-6a0e52346ee0"
               />
             </Grid>
             <Grid item xs={12}>

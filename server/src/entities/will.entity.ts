@@ -33,5 +33,5 @@ export class Will {
   contract: Contract
 
   @ApiProperty()
-  salt: string
+  randomKey: string
 }

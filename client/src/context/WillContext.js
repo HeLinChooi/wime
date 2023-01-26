@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { willContractABI } from '../util/constants';
 
 const WillContext = React.createContext();
 
 const { ethereum } = window;
 
+const createEthereumContract = (contractAddress) => {
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
+  const willContract = new ethers.Contract(contractAddress, willContractABI, signer);
+
+  return willContract;
+};
+
 const WillProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
-  const [willDetails, setWillDetails] = useState({ ownerIcNumber: "12345678" })
+  const [willDetails, setWillDetails] = useState({ ownerIcNumber: "12345678" });
   const [validators, setValidators] = useState([]);
   const [willCreated, setWillCreated] = useState(false);
   const [willActivated, setWillActivated] = useState(false);
@@ -68,6 +77,32 @@ const WillProvider = ({ children }) => {
     }
   };
 
+  const signTransactionToValidate = async () => {
+    try {
+      if (ethereum) {
+        console.log('willDetails.contractAddress', willDetails.contractAddress);
+        const willContract = createEthereumContract(willDetails.contractAddress);
+
+        const validateTx = await willContract.validate({gasLimit: 100000});
+        // Wait for the transaction to be mined
+        
+        setIsLoading(true);
+        console.log(`Loading - ${validateTx}`);
+        await validateTx.wait();
+        console.log(`Success - ${validateTx}`);
+        setIsLoading(false);
+
+        window.location.reload();
+      } else {
+        console.log("No ethereum object");
+      }
+    } catch (error) {
+      console.log(error);
+
+      // throw new Error("No ethereum object");
+    }
+  }
+
   useEffect(() => {
     checkIfWalletIsConnect();
   }, []);
@@ -85,7 +120,8 @@ const WillProvider = ({ children }) => {
         willCreated,
         setWillCreated,
         willActivated,
-        setWillActivated
+        setWillActivated,
+        signTransactionToValidate
       }}
     >
       {children}

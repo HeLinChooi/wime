@@ -12,7 +12,7 @@ const ValidateWillPage = () => {
     formState: { errors },
   } = useForm();
 
-  const { willDetails, validators, setValidators, willCreated } = useWillContext();
+  const { willDetails, validators, setValidators, willCreated, signTransactionToValidate } = useWillContext();
   // const [validated, setValidated] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -39,6 +39,7 @@ const ValidateWillPage = () => {
       const responseBody = await response.json();
       console.log("responseBody", responseBody);
 
+      // Front End update validators approved
       let tempValidators = validators.map(validator => ({ ...validator }));
       tempValidators = tempValidators.map(v => {
         if (v.validatorPubKey === data.validatorWalletAddress) {
@@ -52,6 +53,10 @@ const ValidateWillPage = () => {
       alert("Something went wrong. Please try again.")
     }
   };
+
+  const onValidate = async () => {
+    signTransactionToValidate();
+  }
 
   return (
     <>
@@ -110,7 +115,8 @@ const ValidateWillPage = () => {
               <Button
                 fullWidth
                 variant="contained"
-                onClick={handleSubmit(handleValidate)}
+                // onClick={handleSubmit(handleValidate)}
+                onClick={handleSubmit(onValidate)}
                 disabled={!willCreated}
               >
                 Validate

@@ -79,7 +79,7 @@ const CreateWillPage = () => {
       setWillCreated(true);
       handleClickOpen();
       setValidators(responseBody.validators);
-      setWillDetails({ ...otherDetailsExceptPrivKey, contractAddress: responseBody.contract.address, salt: responseBody.salt });
+      setWillDetails({ ...otherDetailsExceptPrivKey, contractAddress: responseBody.contract.address, randomKey: responseBody.randomKey });
     } else {
       alert("Something went wrong. Please try again.")
     }
@@ -105,7 +105,7 @@ const CreateWillPage = () => {
         >
           {
             willCreated ? <Grid item xs={12}>
-              <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress} with salt value {willDetails.salt}.</Alert>
+              <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress} with randomKey value {willDetails.randomKey}.</Alert>
             </Grid> : <></>
           }
           <Grid item xs={6}>
@@ -251,7 +251,7 @@ const CreateWillPage = () => {
                 <CheckCircleIcon sx={{ fontSize: "80px", color: "green" }} />
               </Grid>
               <Grid item sx={{ textAlign: "center" }}>
-                {`Will Smart Contract deployed at address ${willDetails.contractAddress} with salt value ${willDetails.salt}.`}
+                {`Will Smart Contract deployed at address ${willDetails.contractAddress} with randomKey value ${willDetails.randomKey}.`}
               </Grid>
             </Grid>
           </DialogTitle>

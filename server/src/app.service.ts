@@ -37,7 +37,7 @@ export class AppService {
         },
       ],
       contract: null,
-      salt: '27d2bef6-db75-4e8b-9de5-dffd85494a55',
+      randomKey: '27d2bef6-db75-4e8b-9de5-dffd85494a55',
     },
   ];
 
@@ -80,7 +80,7 @@ export class AppService {
       isActive: false,
       isAssetsTransferred: false,
       contract: willContract,
-      salt: '9a001906-e239-40e4-bdb1-6a0e52346ee0',
+      randomKey: '9a001906-e239-40e4-bdb1-6a0e52346ee0',
     };
 
     this.wills.push(newWill);
