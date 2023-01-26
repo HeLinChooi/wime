@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Container,
   Grid,
   TextField,
   Typography,
@@ -63,28 +64,39 @@ const CreateWillPage = () => {
   };
 
   return (
-    <>
-      <Grid
-        container
-        spacing={2}
+    <Container
+      sx={{
+        marginY: 2,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Box
         sx={{
-          p: 2
+          // p: 2,
+          width: 600,
+          // height: 300,
         }}
-      // rowSpacing={2}
-      // columnSpacing={{ xs: 1, sm: 2, md: 2 }}
       >
-        <Grid item xs={3}></Grid>
-        <Grid item xs={6}>
-          <Typography variant="h5" component="h2">
-            Create Will
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Box display="flex" justifyContent="center" alignItems="center">
-            <img src={beneficiaryImg} alt="" height="200px" />
-          </Box>
-        </Grid>
-        <Grid item xs={12} md={6} container spacing={2}>
+
+        <Grid
+          container
+          spacing={2}
+        // rowSpacing={2}
+        // columnSpacing={{ xs: 1, sm: 2, md: 2 }}
+        >
+          <Grid item xs={6}>
+            <Typography variant="h5" component="h2">
+              Create Will
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <img src={beneficiaryImg} alt="" height="200px" />
+            </Box>
+          </Grid>
+          {/* <Grid item xs={12} md={6} container spacing={2}> */}
 
           <Grid item xs={12}>
             <TextField
@@ -133,14 +145,14 @@ const CreateWillPage = () => {
                   id="outlined-basic"
                   label={"Validator Address " + (index + 1)}
                   variant="outlined"
-                  {...register(`validatorsAddress.${index}`)}
+                  {...register(`validatorsAddress.${index}`, { required: true })}
                 />
               </Grid>
             </React.Fragment>
           ))}
-        </Grid>
+          {/* </Grid> */}
 
-        <Grid item container xs={12} md={6} spacing={2} alignItems="flex-start">
+          {/* <Grid item container xs={12} md={6} spacing={2} alignItems="flex-start"> */}
 
           <Grid item xs={12}>
             <Button
@@ -159,7 +171,7 @@ const CreateWillPage = () => {
                   id="outlined-basic"
                   label={"Beneficiary Address " + (index + 1)}
                   variant="outlined"
-                  {...register(`address.${index}`)}
+                  {...register(`address.${index}`, { required: true })}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -170,27 +182,25 @@ const CreateWillPage = () => {
                   variant="outlined"
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 100 } }}
-                  {...register(`percentage.${index}`)}
+                  {...register(`percentage.${index}`, { required: true })}
                 />
               </Grid>
             </React.Fragment>
           ))}
-        </Grid>
+          {/* </Grid> */}
 
-        <Grid item xs={4}></Grid>
-        <Grid item xs={4}>
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={handleSubmit(onSubmit)}
-          >
-            Submit
-          </Button>
+          <Grid item xs={12}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={handleSubmit(onSubmit)}
+            >
+              Submit
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
-      {/* </Box>
-      </Container> */}
-    </>
+      </Box>
+    </Container>
   );
 };
 
