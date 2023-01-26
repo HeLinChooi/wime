@@ -127,7 +127,7 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Wallet Address"
               variant="outlined"
-              value="0xcd3b766ccdd6ae721141f452c550ca635964ce71"
+              defaultValue="0xcd3b766ccdd6ae721141f452c550ca635964ce71"
               {...register("ownerPubKey", { required: true })}
               disabled={willCreated}
             />
@@ -139,7 +139,7 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Identity Number"
               variant="outlined"
-              value="1234"
+              defaultValue="1234"
               {...register("ownerIcNumber", { required: true })}
               disabled={willCreated}
             />
@@ -151,7 +151,7 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Private Key"
               variant="outlined"
-              value="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+              defaultValue="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
               {...register("ownerPrivKey", { required: true })}
               disabled={willCreated}
             />
@@ -176,7 +176,7 @@ const CreateWillPage = () => {
                   variant="outlined"
                   {...register(`validatorsAddress.${index}`, { required: true })}
                   disabled={willCreated}
-                  value="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+                  defaultValue="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
                 />
               </Grid>
             </React.Fragment>
@@ -201,25 +201,25 @@ const CreateWillPage = () => {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  id="outlined-basic"
+                  id={`address.${index}`}
                   label={"Beneficiary Address " + (index + 1)}
                   variant="outlined"
                   {...register(`address.${index}`, { required: true })}
                   disabled={willCreated}
-                  value="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+                  defaultValue="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  id="outlined-basic"
+                  id={`percentage.${index}`}
                   label="Percentage"
                   variant="outlined"
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 100 } }}
                   {...register(`percentage.${index}`, { required: true })}
                   disabled={willCreated}
-                  value="100"
+                  defaultValue="100"
                 />
               </Grid>
             </React.Fragment>

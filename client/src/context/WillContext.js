@@ -68,20 +68,6 @@ const WillProvider = ({ children }) => {
     }
   };
 
-  const validate = async (validatorPubKey) => {
-    // TODO: get validatorPubKey from metamask
-    // TODO: sign the transaction of validation
-    let tempValidators = validators.map(validator => ({ ...validator }));
-    tempValidators = tempValidators.map(v => {
-      if (v.validatorPubKey === validatorPubKey) {
-        v.isValidated = true;
-      }
-      return v;
-    })
-    setValidators(tempValidators);
-  }
-
-
   useEffect(() => {
     checkIfWalletIsConnect();
   }, []);
@@ -96,7 +82,6 @@ const WillProvider = ({ children }) => {
         setWillDetails,
         validators,
         setValidators,
-        validate,
         willCreated,
         setWillCreated,
         willActivated,

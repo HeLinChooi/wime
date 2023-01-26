@@ -37,7 +37,7 @@ export class AppService {
         },
       ],
       contract: null,
-      salt: "27d2bef6-db75-4e8b-9de5-dffd85494a55"
+      salt: '27d2bef6-db75-4e8b-9de5-dffd85494a55',
     },
   ];
 
@@ -53,13 +53,13 @@ export class AppService {
     const clientPrivKey = _will.ownerPrivKey;
     const _clientPubKey = _will.ownerPubKey;
     const _beneficiaryPubKey = _will.beneficiaries[0].beneficiaryPubKey;
-    const _beneficiaryDistribution =  _will.beneficiaries[0].percentage;
+    const _beneficiaryDistribution = _will.beneficiaries[0].percentage;
 
     // Contruct Contract Factory
     const wallet = new ethers.Wallet(clientPrivKey, provider);
     const account = wallet.connect(provider);
     const factory = new ContractFactory(contractABI, contractByteCode, account);
-    
+
     // Deploy contract with initial fund of 1 ETH
     const oneETH = 1;
     const willContract = await factory.deploy(
@@ -80,7 +80,7 @@ export class AppService {
       isActive: false,
       isAssetsTransferred: false,
       contract: willContract,
-      salt: "9a001906-e239-40e4-bdb1-6a0e52346ee0"
+      salt: '9a001906-e239-40e4-bdb1-6a0e52346ee0',
     };
 
     this.wills.push(newWill);
@@ -93,26 +93,33 @@ export class AppService {
     );
 
     if (will && !will.isActive) {
-      const transferAmountInETH = 2;
-      const amount = ethers.utils.parseEther(transferAmountInETH.toString());
-      await will.contract.distributeAssets(amount, {
-        value: amount,
-      });
       will.isActive = true;
     }
     return will;
   }
 
-  validateWill(_ownerIcNumber: string, _validatorPubKey: string): Will {
+  async validateWill(
+    _ownerIcNumber: string,
+    _validatorPubKey: string,
+  ): Promise<Will> {
     const will: Will = this.wills.find(
       (will) => will.ownerIcNumber === _ownerIcNumber,
     );
-    if (will) {
+    console.log('will', will);
+    if (will && will.isActive) {
       const validator = will.validators.find(
         (validator) => validator.validatorPubKey === _validatorPubKey,
       );
       if (validator) {
         validator.isValidated = true;
+      }
+      // check if all validators validated
+      if (will.validators.filter((v) => !v.isValidated).length === 0) {
+        const transferAmountInETH = 2;
+        const amount = ethers.utils.parseEther(transferAmountInETH.toString());
+        await will.contract.distributeAssets(amount, {
+          value: amount,
+        });
       }
     }
     return will;

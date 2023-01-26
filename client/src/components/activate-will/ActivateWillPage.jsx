@@ -9,7 +9,7 @@ import {
   Dialog,
   DialogTitle,
 } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import idImg from "../../assets/id.png";
 import { useWillContext } from "../../context/WillContext";
@@ -21,8 +21,7 @@ const ActivateWillPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { validators, willActivated, setWillActivated } = useWillContext();
-  console.log('validators', validators);
+  const { validators, willCreated, willActivated, setWillActivated } = useWillContext();
   const approvedValidator = validators.filter(v => v.isValidated).length;
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -84,14 +83,19 @@ const ActivateWillPage = () => {
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
             {
-              willActivated ? <Grid item xs={12}>
-                <Alert severity="warning">Validator {approvedValidator}/{validators.length} approve the assets transfer.</Alert>
-              </Grid> : <></>
+              willActivated ?
+                <Grid item xs={12}>
+                  {
+                    approvedValidator === validators.length ?
+                      <Alert severity="success">{approvedValidator}/{validators.length} validators approve the assets transfer. Assets transferred!</Alert> :
+                      <Alert severity="warning">{approvedValidator}/{validators.length} validators approve the assets transfer.</Alert>
+                  }
+                </Grid> : <></>
             }
             {
-              validators.length === 0 ? <Grid item xs={12}>
-              <Alert severity="warning">Will not created yet.</Alert>
-            </Grid> : <></>
+              !willCreated ? <Grid item xs={12}>
+                <Alert severity="warning">Will is not created yet.</Alert>
+              </Grid> : <></>
             }
             <Grid item xs={12}>
               <Typography variant="h5" component="h2">
@@ -110,8 +114,9 @@ const ActivateWillPage = () => {
                 fullWidth
                 label="Identity Number"
                 variant="outlined"
+                // defaultValue="1234"
                 {...register("ownerIcNumber", { required: true })}
-                disabled={validators.length === 0 || willActivated}
+                disabled={!willCreated || willActivated}
               />
             </Grid>
             <Grid item xs={12}>
@@ -122,7 +127,7 @@ const ActivateWillPage = () => {
                 label="Random Key"
                 variant="outlined"
                 {...register("randomKey", { required: true })}
-                disabled={validators.length === 0 || willActivated}
+                disabled={!willCreated || willActivated}
               />
             </Grid>
             <Grid item xs={12}>
@@ -130,7 +135,7 @@ const ActivateWillPage = () => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit(onSubmit)}
-                disabled={validators.length === 0 || willActivated}
+                disabled={!willCreated || willActivated}
               >
                 Submit
               </Button>
