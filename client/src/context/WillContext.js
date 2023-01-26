@@ -9,8 +9,10 @@ const WillProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
-  const [willDetails, setWillDetails] = useState({ownerIcNumber: "12345678"})
+  const [willDetails, setWillDetails] = useState({ ownerIcNumber: "12345678" })
   const [validators, setValidators] = useState([]);
+  const [willCreated, setWillCreated] = useState(false);
+  const [willActivated, setWillActivated] = useState(false);
 
   const checkIfWalletIsConnect = async () => {
     try {
@@ -67,14 +69,16 @@ const WillProvider = ({ children }) => {
   };
 
   const validate = async (validatorPubKey) => {
-    let tempValidators = validators.map(validator => ({...validator}));
+    // TODO: get validatorPubKey from metamask
+    // TODO: sign the transaction of validation
+    let tempValidators = validators.map(validator => ({ ...validator }));
     tempValidators = tempValidators.map(v => {
-      if(v.validatorPubKey === validatorPubKey){
+      if (v.validatorPubKey === validatorPubKey) {
         v.isValidated = true;
       }
       return v;
     })
-    setValidators(tempValidators)
+    setValidators(tempValidators);
   }
 
 
@@ -87,11 +91,16 @@ const WillProvider = ({ children }) => {
       value={{
         connectWallet,
         isLoading,
-        validate,
         currentAccount,
-        validators,
         willDetails,
         setWillDetails,
+        validators,
+        setValidators,
+        validate,
+        willCreated,
+        setWillCreated,
+        willActivated,
+        setWillActivated
       }}
     >
       {children}

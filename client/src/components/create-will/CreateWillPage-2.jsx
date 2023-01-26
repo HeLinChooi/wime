@@ -28,10 +28,9 @@ const CreateWillPage = () => {
     formState: { errors },
   } = useForm();
 
+  const { willDetails, setWillDetails, setValidators, willCreated, setWillCreated } = useWillContext();
   const [beneficiaryNumber, setBeneficiaryNumber] = useState(1);
   const [validatorNumber, setValidatorNumber] = useState(1);
-  const { willDetails, setWillDetails } = useWillContext();
-  const [submitted, setSubmitted] = useState(false);
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -77,8 +76,9 @@ const CreateWillPage = () => {
 
       // Save will details
       const { ownerPrivKey, ...otherDetailsExceptPrivKey } = requestBody;
-      setSubmitted(true);
+      setWillCreated(true);
       handleClickOpen();
+      setValidators(responseBody.validators);
       setWillDetails({ ...otherDetailsExceptPrivKey, contractAddress: responseBody.contract.address, salt: responseBody.salt });
     } else {
       alert("Something went wrong. Please try again.")
@@ -104,7 +104,7 @@ const CreateWillPage = () => {
           spacing={2}
         >
           {
-            submitted ? <Grid item xs={12}>
+            willCreated ? <Grid item xs={12}>
               <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress} with salt value {willDetails.salt}.</Alert>
             </Grid> : <></>
           }
@@ -129,7 +129,7 @@ const CreateWillPage = () => {
               variant="outlined"
               value="0xcd3b766ccdd6ae721141f452c550ca635964ce71"
               {...register("ownerPubKey", { required: true })}
-              disabled={submitted}
+              disabled={willCreated}
             />
           </Grid>
           <Grid item xs={12}>
@@ -141,7 +141,7 @@ const CreateWillPage = () => {
               variant="outlined"
               value="1234"
               {...register("ownerIcNumber", { required: true })}
-              disabled={submitted}
+              disabled={willCreated}
             />
           </Grid>
           <Grid item xs={12}>
@@ -153,14 +153,14 @@ const CreateWillPage = () => {
               variant="outlined"
               value="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
               {...register("ownerPrivKey", { required: true })}
-              disabled={submitted}
+              disabled={willCreated}
             />
           </Grid>
           <Grid item xs={12}>
             <Button
               variant="contained"
               onClick={() => setValidatorNumber(validatorNumber + 1)}
-              disabled={submitted}
+              disabled={willCreated}
             >
               <AddIcon />
               <span>Validators</span>
@@ -175,7 +175,8 @@ const CreateWillPage = () => {
                   label={"Validator Address " + (index + 1)}
                   variant="outlined"
                   {...register(`validatorsAddress.${index}`, { required: true })}
-                  disabled={submitted}
+                  disabled={willCreated}
+                  value="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
                 />
               </Grid>
             </React.Fragment>
@@ -188,12 +189,13 @@ const CreateWillPage = () => {
             <Button
               variant="contained"
               onClick={() => setBeneficiaryNumber(beneficiaryNumber + 1)}
-              disabled={submitted}
+              disabled={willCreated}
             >
               <AddIcon />
               <span>Beneficiary</span>
             </Button>
           </Grid>
+          {/* TODO: add guard: max only 100% */}
           {createArrayWithNumbers(beneficiaryNumber).map((index) => (
             <React.Fragment key={`beneficiary${index}`}>
               <Grid item xs={6}>
@@ -203,7 +205,8 @@ const CreateWillPage = () => {
                   label={"Beneficiary Address " + (index + 1)}
                   variant="outlined"
                   {...register(`address.${index}`, { required: true })}
-                  disabled={submitted}
+                  disabled={willCreated}
+                  value="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
                 />
               </Grid>
               <Grid item xs={6}>
@@ -215,7 +218,8 @@ const CreateWillPage = () => {
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 100 } }}
                   {...register(`percentage.${index}`, { required: true })}
-                  disabled={submitted}
+                  disabled={willCreated}
+                  value="100"
                 />
               </Grid>
             </React.Fragment>
@@ -227,7 +231,7 @@ const CreateWillPage = () => {
               fullWidth
               variant="contained"
               onClick={handleSubmit(onSubmit)}
-              disabled={submitted}
+              disabled={willCreated}
             >
               Submit
             </Button>

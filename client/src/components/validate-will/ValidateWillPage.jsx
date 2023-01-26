@@ -5,9 +5,10 @@ import { useWillContext } from "../../context/WillContext";
 
 const ValidateWillPage = () => {
 
-  const { willDetails } = useWillContext();
+  const { willDetails, validate } = useWillContext();
   const handleValidate = (data) => {
     console.log(data);
+    validate();
   };
 
   return (

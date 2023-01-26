@@ -21,9 +21,9 @@ const ActivateWillPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { validators } = useWillContext();
+  const { validators, willActivated, setWillActivated } = useWillContext();
+  console.log('validators', validators);
   const approvedValidator = validators.filter(v => v.isValidated).length;
-  const [submitted, setSubmitted] = useState(false);
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -50,7 +50,7 @@ const ActivateWillPage = () => {
       console.log("responseBody", responseBody);
       console.log(responseBody);
       if (responseBody.isActive) {
-        setSubmitted(true);
+        setWillActivated(true);
         handleClickOpen();
       } else {
         alert("Something went wrong. Please try again.")
@@ -84,8 +84,8 @@ const ActivateWillPage = () => {
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
             {
-              submitted ? <Grid item xs={12}>
-                <Alert severity="warning">Validator {approvedValidator}/{validators.lenght} approve the assets transfer.</Alert>
+              willActivated ? <Grid item xs={12}>
+                <Alert severity="warning">Validator {approvedValidator}/{validators.length} approve the assets transfer.</Alert>
               </Grid> : <></>
             }
             {
@@ -111,7 +111,7 @@ const ActivateWillPage = () => {
                 label="Identity Number"
                 variant="outlined"
                 {...register("ownerIcNumber", { required: true })}
-                disabled={validators.length === 0 || submitted}
+                disabled={validators.length === 0 || willActivated}
               />
             </Grid>
             <Grid item xs={12}>
@@ -122,7 +122,7 @@ const ActivateWillPage = () => {
                 label="Random Key"
                 variant="outlined"
                 {...register("randomKey", { required: true })}
-                disabled={validators.length === 0 || submitted}
+                disabled={validators.length === 0 || willActivated}
               />
             </Grid>
             <Grid item xs={12}>
@@ -130,7 +130,7 @@ const ActivateWillPage = () => {
                 fullWidth
                 variant="contained"
                 onClick={handleSubmit(onSubmit)}
-                disabled={validators.length === 0 || submitted}
+                disabled={validators.length === 0 || willActivated}
               >
                 Submit
               </Button>
@@ -150,7 +150,7 @@ const ActivateWillPage = () => {
                   <InfoIcon sx={{ fontSize: "80px", color: "dodgerblue" }} />
                 </Grid>
                 <Grid item sx={{ textAlign: "center" }}>
-                  {`Notified ${approvedValidator} validators!`}
+                  {`Notified ${validators.length} validators!`}
                 </Grid>
               </Grid>
             </DialogTitle>
