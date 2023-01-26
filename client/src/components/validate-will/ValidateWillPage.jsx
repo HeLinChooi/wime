@@ -1,8 +1,11 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import React from "react";
 import signImg from "../../assets/sign.png";
+import { useWillContext } from "../../context/WillContext";
 
 const ValidateWillPage = () => {
+
+  const { willDetails } = useWillContext();
   const handleValidate = (data) => {
     console.log(data);
   };
@@ -41,7 +44,7 @@ const ValidateWillPage = () => {
             </Grid>
             <Grid item xs={12}>
               <Box display="flex" justifyContent="center" alignItems="center">
-                <p>Deceased ID: 980101801980</p>
+                <p>Deceased ID: {willDetails.ownerIcNumber}</p>
               </Box>
             </Grid>
             <Grid item xs={12}>

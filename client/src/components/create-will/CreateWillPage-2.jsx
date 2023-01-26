@@ -1,7 +1,10 @@
 import {
+  Alert,
   Box,
   Button,
   Container,
+  Dialog,
+  DialogTitle,
   Grid,
   TextField,
   Typography,
@@ -12,6 +15,7 @@ import { useForm } from "react-hook-form";
 import AddIcon from "@mui/icons-material/Add";
 import beneficiaryImg from "../../assets/beneficiary.png";
 import { useWillContext } from "../../context/WillContext";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function createArrayWithNumbers(length) {
   return Array.from({ length }, (_, i) => i);
@@ -26,7 +30,17 @@ const CreateWillPage = () => {
 
   const [beneficiaryNumber, setBeneficiaryNumber] = useState(1);
   const [validatorNumber, setValidatorNumber] = useState(1);
-  const { validators } = useWillContext();
+  const { willDetails, setWillDetails } = useWillContext();
+  const [submitted, setSubmitted] = useState(false);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const API_URL = "http://localhost:8000";
   const onSubmit = async (data) => {
@@ -57,10 +71,18 @@ const CreateWillPage = () => {
     };
     console.log("requestBody", requestBody)
     const response = await fetch(`${API_URL}/create-will`, requestOptions)
-      .then((res) => {
-        return res.json();
-      })
+    .then((res) => {
+      console.log(res)
+      return res.json();
+    })
     console.log(response);
+
+    // If succeeded
+    // Save will details
+    const { ownerPrivKey, ...otherDetailsExceptPrivKey } = requestBody;
+    setSubmitted(true);
+    handleClickOpen();
+    setWillDetails({...otherDetailsExceptPrivKey, contractAddress: response.contract.address});
   };
 
   return (
@@ -74,18 +96,18 @@ const CreateWillPage = () => {
     >
       <Box
         sx={{
-          // p: 2,
           width: 600,
-          // height: 300,
         }}
       >
-
         <Grid
           container
           spacing={2}
-        // rowSpacing={2}
-        // columnSpacing={{ xs: 1, sm: 2, md: 2 }}
         >
+          {
+            submitted ? <Grid item xs={12}>
+              <Alert severity="success">Will Smart Contract deployed at address {willDetails.contractAddress}!</Alert>
+            </Grid> : <></>
+          }
           <Grid item xs={6}>
             <Typography variant="h5" component="h2">
               Create Will
@@ -105,7 +127,9 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Wallet Address"
               variant="outlined"
+              value="0xcd3b766ccdd6ae721141f452c550ca635964ce71"
               {...register("ownerPubKey", { required: true })}
+              disabled={submitted}
             />
           </Grid>
           <Grid item xs={12}>
@@ -115,7 +139,9 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Identity Number"
               variant="outlined"
+              value="1234"
               {...register("ownerIcNumber", { required: true })}
+              disabled={submitted}
             />
           </Grid>
           <Grid item xs={12}>
@@ -125,13 +151,16 @@ const CreateWillPage = () => {
               fullWidth
               label="Owner Private Key"
               variant="outlined"
+              value="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
               {...register("ownerPrivKey", { required: true })}
+              disabled={submitted}
             />
           </Grid>
           <Grid item xs={12}>
             <Button
               variant="contained"
               onClick={() => setValidatorNumber(validatorNumber + 1)}
+              disabled={submitted}
             >
               <AddIcon />
               <span>Validators</span>
@@ -146,6 +175,7 @@ const CreateWillPage = () => {
                   label={"Validator Address " + (index + 1)}
                   variant="outlined"
                   {...register(`validatorsAddress.${index}`, { required: true })}
+                  disabled={submitted}
                 />
               </Grid>
             </React.Fragment>
@@ -158,6 +188,7 @@ const CreateWillPage = () => {
             <Button
               variant="contained"
               onClick={() => setBeneficiaryNumber(beneficiaryNumber + 1)}
+              disabled={submitted}
             >
               <AddIcon />
               <span>Beneficiary</span>
@@ -172,6 +203,7 @@ const CreateWillPage = () => {
                   label={"Beneficiary Address " + (index + 1)}
                   variant="outlined"
                   {...register(`address.${index}`, { required: true })}
+                  disabled={submitted}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -183,6 +215,7 @@ const CreateWillPage = () => {
                   type="number"
                   InputProps={{ inputProps: { min: 0, max: 100 } }}
                   {...register(`percentage.${index}`, { required: true })}
+                  disabled={submitted}
                 />
               </Grid>
             </React.Fragment>
@@ -194,12 +227,32 @@ const CreateWillPage = () => {
               fullWidth
               variant="contained"
               onClick={handleSubmit(onSubmit)}
+              disabled={submitted}
             >
               Submit
             </Button>
           </Grid>
         </Grid>
       </Box>
+      <div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            <Grid container direction="column" alignItems="center">
+              <Grid item>
+                <CheckCircleIcon sx={{ fontSize: "80px", color: "green" }}/>
+              </Grid>
+              <Grid item sx={{textAlign:"center"}}>
+              {`Will Smart Contract deployed at address ${willDetails.contractAddress}!`}
+              </Grid>
+            </Grid>
+          </DialogTitle>
+        </Dialog>
+      </div>
     </Container>
   );
 };

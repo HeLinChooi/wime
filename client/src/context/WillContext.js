@@ -9,6 +9,7 @@ const WillProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
+  const [willDetails, setWillDetails] = useState({ownerIcNumber: "12345678"})
   const [validators, setValidators] = useState([]);
 
   const checkIfWalletIsConnect = async () => {
@@ -21,7 +22,6 @@ const WillProvider = ({ children }) => {
         setCurrentAccount(accounts[0]);
         checkBalance();
         console.log(accounts[0]);
-
       } else {
         console.log("No accounts found");
       }
@@ -90,6 +90,8 @@ const WillProvider = ({ children }) => {
         validate,
         currentAccount,
         validators,
+        willDetails,
+        setWillDetails,
       }}
     >
       {children}
