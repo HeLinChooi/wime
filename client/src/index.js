@@ -20,7 +20,6 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <WillProvider>
-
         <RouterProvider router={router} />
       </WillProvider>
     </ThemeProvider>

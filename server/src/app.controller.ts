@@ -20,14 +20,14 @@ export class AppController {
 
   @ApiResponse({ status: 201, description: 'Will created' })
   @Post('create-will')
-  createWill(@Body() createWillDto: CreateWillDto): Will {
-    return this.appService.createWill(createWillDto);
+  async createWill(@Body() createWillDto: CreateWillDto): Promise<Will> {
+    return await this.appService.createWill(createWillDto);
   }
 
   @ApiResponse({ status: 201, description: 'Will activated' })
   @Post('activate-will')
-  activateWill(@Body() data: { ownerIcNumber: string }): Will {
-    return this.appService.activateWill(data.ownerIcNumber);
+  async activateWill(@Body() data: { ownerIcNumber: string }): Promise<Will> {
+    return await this.appService.activateWill(data.ownerIcNumber);
   }
 
   @ApiResponse({ status: 201, description: 'Will validated' })
