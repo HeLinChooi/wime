@@ -59,7 +59,7 @@ describe("Will", async function () {
       console.log("validateTx", validateTx);
       // wait for the transaction to be mined
       await validateTx.wait();
-
+      will.interface.functions["validate()"].name
       // Get the value in the mapping for validator1's address
       const isAuthorized = await will.authorizedAddressesForMultiSig(
         validator1.address

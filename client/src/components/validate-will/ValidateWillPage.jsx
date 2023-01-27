@@ -109,14 +109,15 @@ const ValidateWillPage = () => {
                 variant="outlined"
                 {...register("validatorWalletAddress", { required: true })}
                 disabled={!willCreated}
+                defaultValue="0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
               />
             </Grid>
             <Grid item xs={12}>
               <Button
                 fullWidth
                 variant="contained"
-                // onClick={handleSubmit(handleValidate)}
-                onClick={handleSubmit(onValidate)}
+                onClick={handleSubmit(handleValidate)}
+                // onClick={handleSubmit(onValidate)}
                 disabled={!willCreated}
               >
                 Validate
