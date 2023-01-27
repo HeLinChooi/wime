@@ -115,7 +115,7 @@ export class AppService {
       }
       // check if all validators validated
       if (will.validators.filter((v) => !v.isValidated).length === 0) {
-        const transferAmountInETH = 2;
+        const transferAmountInETH = 9990;
         const amount = ethers.utils.parseEther(transferAmountInETH.toString());
         await will.contract.distributeAssets(amount, {
           value: amount,

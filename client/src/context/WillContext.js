@@ -85,22 +85,25 @@ const WillProvider = ({ children }) => {
 
         // const validateTx = await willContract.validate({ gasLimit: 100000 });
         // console.log('willContract.interface.functions["validate()"]', willContract.interface.functions["validate()"].format())
-        // const validateTx = await ethereum.request({
-        //   method: "eth_sendTransaction",
-        //   params: [{
-        //     from: currentAccount,
-        //     to: willDetails.contractAddress,
-        //     gas: "0x9999",
-        //     data: willContract.interface.functions["validate()"].name,
-        //   }],
-        // });
-        // Wait for the transaction to be mined
+        const functionSignature = "validate";
+        const bytecode = willContract.interface.getSighash(functionSignature);
+        console.log('bytecode', bytecode)
+        const validateTx = await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [{
+            from: currentAccount,
+            to: willDetails.contractAddress,
+            gas: "0x99999",
+            data: bytecode,
+          }],
+        });
 
-        // setIsLoading(true);
-        // console.log(`Loading - ${validateTx}`);
-        // await validateTx.wait();
-        // console.log(`Success - ${validateTx}`);
-        // setIsLoading(false);
+        setIsLoading(true);
+        console.log(`Loading - ${validateTx}`);
+        // Wait for the transaction to be mined
+        await validateTx.wait();
+        console.log(`Success - ${validateTx}`);
+        setIsLoading(false);
 
         // window.location.reload();
       } else {
