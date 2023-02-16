@@ -1,4 +1,9 @@
 # WIME - Wealth Inheritance Made Easy
+A solution aims to address the growing need for secure and efficient inheritance management in the digital age.
+
+Link to prototype: https://wime-gilt.vercel.app
+
+<img src="./create-will.png" alt="Sea Game Interface" width="600"/>
 
 ## Inspiration
 We were inspired to create WIME to address the growing need for secure and efficient inheritance management in the digital age. With the increasing amount of digital assets, such as cryptocurrency and online accounts, traditional inheritance methods are becoming outdated and vulnerable to fraud or hacking. We wanted to create a solution that would provide peace of mind for individuals, while also reducing the need for intermediaries and lowering costs.
