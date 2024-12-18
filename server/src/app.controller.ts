@@ -32,9 +32,9 @@ export class AppController {
 
   @ApiResponse({ status: 201, description: 'Will validated' })
   @Post('validate-will')
-  validateWill(
+  async validateWill(
     @Body() data: { ownerIcNumber: string; validatorPubKey: string },
-  ): Will {
+  ): Promise<Will> {
     return this.appService.validateWill(
       data.ownerIcNumber,
       data.validatorPubKey,

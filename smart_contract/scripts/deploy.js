@@ -27,6 +27,8 @@ async function main() {
 
   const _beneficiaryPubKey = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
   const _beneficiaryDistribution = "100";
+  const _validatorOnePubKey = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
+  const _validatorTwoPubKey = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
   const oneETH = 1;
 
   const Will = await ethers.getContractFactory("Will");
@@ -35,6 +37,7 @@ async function main() {
     _beneficiaryPubKey,
     _beneficiaryDistribution,
     ethers.utils.parseEther(oneETH.toString()),
+    [_validatorOnePubKey, _validatorTwoPubKey],
     { value: ethers.utils.parseEther(oneETH.toString()) }
   );
   await will.deployed();

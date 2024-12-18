@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { willContractABI } from '../util/constants';
 
 const WillContext = React.createContext();
 
 const { ethereum } = window;
 
+const createEthereumContract = (contractAddress) => {
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
+  const willContract = new ethers.Contract(contractAddress, willContractABI, signer);
+
+  return willContract;
+};
+
 const WillProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
+  const [willDetails, setWillDetails] = useState({ ownerIcNumber: "12345678" });
   const [validators, setValidators] = useState([]);
+  const [willCreated, setWillCreated] = useState(false);
+  const [willActivated, setWillActivated] = useState(false);
 
   const checkIfWalletIsConnect = async () => {
     try {
@@ -21,7 +33,6 @@ const WillProvider = ({ children }) => {
         setCurrentAccount(accounts[0]);
         checkBalance();
         console.log(accounts[0]);
-
       } else {
         console.log("No accounts found");
       }
@@ -66,17 +77,44 @@ const WillProvider = ({ children }) => {
     }
   };
 
-  const validate = async (validatorPubKey) => {
-    let tempValidators = validators.map(validator => ({...validator}));
-    tempValidators = tempValidators.map(v => {
-      if(v.validatorPubKey === validatorPubKey){
-        v.isValidated = true;
-      }
-      return v;
-    })
-    setValidators(tempValidators)
-  }
+  const signTransactionToValidate = async () => {
+    try {
+      if (ethereum) {
+        console.log('willDetails.contractAddress', willDetails.contractAddress);
+        const willContract = createEthereumContract(willDetails.contractAddress);
 
+        // const validateTx = await willContract.validate({ gasLimit: 100000 });
+        // console.log('willContract.interface.functions["validate()"]', willContract.interface.functions["validate()"].format())
+        const functionSignature = "validate";
+        const bytecode = willContract.interface.getSighash(functionSignature);
+        console.log('bytecode', bytecode)
+        const validateTx = await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [{
+            from: currentAccount,
+            to: willDetails.contractAddress,
+            gas: "0x99999",
+            data: bytecode,
+          }],
+        });
+
+        setIsLoading(true);
+        console.log(`Loading - ${validateTx}`);
+        // Wait for the transaction to be mined
+        await validateTx.wait();
+        console.log(`Success - ${validateTx}`);
+        setIsLoading(false);
+
+        // window.location.reload();
+      } else {
+        console.log("No ethereum object");
+      }
+    } catch (error) {
+      console.log(error);
+
+      // throw new Error("No ethereum object");
+    }
+  }
 
   useEffect(() => {
     checkIfWalletIsConnect();
@@ -87,9 +125,16 @@ const WillProvider = ({ children }) => {
       value={{
         connectWallet,
         isLoading,
-        validate,
         currentAccount,
+        willDetails,
+        setWillDetails,
         validators,
+        setValidators,
+        willCreated,
+        setWillCreated,
+        willActivated,
+        setWillActivated,
+        signTransactionToValidate
       }}
     >
       {children}
