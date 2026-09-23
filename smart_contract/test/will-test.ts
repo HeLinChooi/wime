@@ -1,6 +1,8 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { network } from "hardhat";
+
+const { ethers, networkHelpers } = await network.getOrCreate();
+const { loadFixture } = networkHelpers;
 
 // Command to test: npx hardhat test --typecheck test/will-test.ts
 describe("Will", async function () {
@@ -22,12 +24,12 @@ describe("Will", async function () {
       _ownerPubKey,
       _beneficiaryPubKey,
       _beneficiaryDistribution,
-      ethers.utils.parseEther(oneETH.toString()),
-      { value: ethers.utils.parseEther(oneETH.toString()) }
+      ethers.parseEther(oneETH.toString()),
+      { value: ethers.parseEther(oneETH.toString()) }
     );
 
     const scBalance = await will.getBalance();
-    console.log("scBalance", ethers.utils.formatEther(scBalance));
+    console.log("scBalance", ethers.formatEther(scBalance));
 
     return { will, owner, beneficiary };
   }
@@ -47,21 +49,21 @@ describe("Will", async function () {
     // Get the initial balance of the recipient
     const initialBalance = await ethers.provider.getBalance(beneficiary.address);
 
-    // const amount = ownerBalance.sub(ethers.utils.parseEther(oneETH.toString()));
-    const amount = ethers.utils.parseEther(oneETH.toString());
+    // const amount = ownerBalance.sub(ethers.parseEther(oneETH.toString()));
+    const amount = ethers.parseEther(oneETH.toString());
     await will.distributeAssets(amount, {
       value: amount,
     });
 
     const scBalance2 = await will.getBalance();
-    console.log("scBalance2", ethers.utils.formatEther(scBalance2));
+    console.log("scBalance2", ethers.formatEther(scBalance2));
     // Get the final balance of the recipient
     const finalBalance = await ethers.provider.getBalance(beneficiary.address);
 
     // Calculate the difference between the initial and final balances
-    const difference = finalBalance.sub(initialBalance);
-    console.log('initialBalance', ethers.utils.formatEther(initialBalance));
-    console.log('finalBalance', ethers.utils.formatEther(finalBalance));
+    const difference = finalBalance - initialBalance;
+    console.log('initialBalance', ethers.formatEther(initialBalance));
+    console.log('finalBalance', ethers.formatEther(finalBalance));
     expect(difference).to.equal(amount);
   });
 });

@@ -32,15 +32,15 @@ const WillProvider = ({ children }) => {
 
   const checkBalance = async () => {
     try {
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
+      const provider = new ethers.BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
       signer
         .getAddress()
         .then((address) => {
           return provider.getBalance(address);
         })
         .then((rawBalance) => {
-          const value = parseFloat(ethers.utils.formatEther(rawBalance));
+          const value = parseFloat(ethers.formatEther(rawBalance));
           console.log("balance: " + value);
           setCurrentBalance(value);
         });

@@ -9,3 +9,6 @@ typechain-types
 cache
 artifacts
 
+
+# Hardhat 3 generated contract types
+types

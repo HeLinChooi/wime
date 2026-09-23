@@ -4,7 +4,9 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
-const hre = require("hardhat");
+import { network } from "hardhat";
+
+const { ethers } = await network.getOrCreate();
 const _vaultPassword = "testPassword";
 const _ownerPubKey = "0xdd2fd4581271e230360230f9337d5c0430bf44c0";
 const _clientPubKey = "0xcd3b766ccdd6ae721141f452c550ca635964ce71";
@@ -34,11 +36,11 @@ async function main() {
     _clientPubKey,
     _beneficiaryPubKey,
     _beneficiaryDistribution,
-    ethers.utils.parseEther(oneETH.toString()),
-    { value: ethers.utils.parseEther(oneETH.toString()) }
+    ethers.parseEther(oneETH.toString()),
+    { value: ethers.parseEther(oneETH.toString()) }
   );
-  await will.deployed();
-  console.log("Will deployed to: " + will.address);
+  await will.waitForDeployment();
+  console.log("Will deployed to: " + (await will.getAddress()));
 }
 
 // We recommend this pattern to be able to use async/await everywhere

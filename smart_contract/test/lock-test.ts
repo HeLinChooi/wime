@@ -1,7 +1,9 @@
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { anyValue } from "@nomicfoundation/hardhat-ethers-chai-matchers/withArgs";
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { network } from "hardhat";
+
+const { ethers, networkHelpers } = await network.getOrCreate();
+const { time, loadFixture } = networkHelpers;
 
 describe("Lock", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -41,7 +43,7 @@ describe("Lock", function () {
         deployOneYearLockFixture
       );
 
-      expect(await ethers.provider.getBalance(lock.address)).to.equal(
+      expect(await ethers.provider.getBalance(lock.target)).to.equal(
         lockedAmount
       );
     });
@@ -88,7 +90,7 @@ describe("Lock", function () {
         // Transactions are sent using the first signer by default
         await time.increaseTo(unlockTime);
 
-        await expect(lock.withdraw()).not.to.be.reverted;
+        await expect(lock.withdraw()).not.to.revert(ethers);
       });
     });
 
@@ -115,6 +117,7 @@ describe("Lock", function () {
         await time.increaseTo(unlockTime);
 
         await expect(lock.withdraw()).to.changeEtherBalances(
+          ethers,
           [owner, lock],
           [lockedAmount, -lockedAmount]
         );

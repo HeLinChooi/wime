@@ -4,7 +4,7 @@ import { CreateWillDto } from './dto/create-will.dto';
 import { Vault } from './entities/vault.entity';
 import { CreateVaultDto } from './dto/create-vault-password.dto';
 import { Tx } from './entities/tx.entity';
-import { ethers, ContractFactory } from 'ethers';
+import { ethers, Contract, ContractFactory } from 'ethers';
 import { contractABI, contractByteCode } from './utils/constants';
 
 declare global {
@@ -45,7 +45,7 @@ export class AppService {
   }
 
   async createWill(_will: CreateWillDto): Promise<Will> {
-    const provider = new ethers.providers.JsonRpcProvider(
+    const provider = new ethers.JsonRpcProvider(
       'http://127.0.0.1:8545',
     );
     // Extract values from request body
@@ -65,12 +65,12 @@ export class AppService {
       _clientPubKey,
       _beneficiaryPubKey,
       _beneficiaryDistribution,
-      ethers.utils.parseEther(oneETH.toString()),
-      { value: ethers.utils.parseEther(oneETH.toString()) },
+      ethers.parseEther(oneETH.toString()),
+      { value: ethers.parseEther(oneETH.toString()) },
     );
 
-    console.log(willContract.address);
-    console.log(willContract.deployTransaction);
+    console.log(await willContract.getAddress());
+    console.log(willContract.deploymentTransaction());
     // Extract details except private key
     const { ownerPrivKey, ...otherDetailsExceptPrivKey } = _will;
     const newWill = {
@@ -78,7 +78,7 @@ export class AppService {
       ...otherDetailsExceptPrivKey,
       isActive: false,
       isAssetsTransferred: false,
-      contract: willContract,
+      contract: willContract as Contract,
     };
 
     this.wills.push(newWill);
@@ -92,7 +92,7 @@ export class AppService {
 
     if (will && !will.isActive) {
       const transferAmountInETH = 2;
-      const amount = ethers.utils.parseEther(transferAmountInETH.toString());
+      const amount = ethers.parseEther(transferAmountInETH.toString());
       await will.contract.distributeAssets(amount, {
         value: amount,
       });
@@ -148,21 +148,21 @@ export class AppService {
   }
 
   async sendToken(tx: Tx) {
-    const provider = new ethers.providers.JsonRpcProvider(
+    const provider = new ethers.JsonRpcProvider(
       'http://127.0.0.1:8545',
     );
     console.log(tx);
     const wallet = new ethers.Wallet(tx.fromPrivKey, provider);
     // let walletSigner = wallet.connect(provider);
 
-    provider.getGasPrice().then((currentGasPrice) => {
-      const gasPrice = ethers.utils.hexlify(currentGasPrice).toString();
+    provider.getFeeData().then(({ gasPrice: currentGasPrice }) => {
+      const gasPrice = ethers.toBeHex(currentGasPrice).toString();
       tx.gasPrice = gasPrice;
     });
 
     const newTx = await wallet.sendTransaction({
       to: tx.toPubKey,
-      value: ethers.utils.parseEther(tx.amount),
+      value: ethers.parseEther(tx.amount),
     });
 
     await newTx.wait();

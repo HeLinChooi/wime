@@ -1,11 +1,13 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/types";
 import { expect } from "chai";
-import { Contract, providers } from "ethers";
-import { ethers } from "hardhat";
+import type { ReceiveEther } from "../types/ethers-contracts/index.js";
+import { network } from "hardhat";
+
+const { ethers } = await network.getOrCreate();
 
 describe("ReceiveEther", function () {
-  let myContract: Contract;
-  let address1: SignerWithAddress;
+  let myContract: ReceiveEther;
+  let address1: HardhatEthersSigner;
   beforeEach(async () => {
     // Get the contract factory
     const ReceiveEther = await ethers.getContractFactory("ReceiveEther");
@@ -20,14 +22,14 @@ describe("ReceiveEther", function () {
     const provider = ethers.provider;
     const latestBlock = await ethers.provider.getBlock("latest");
     console.log('latestBlock', latestBlock);
-    expect(await provider.getBalance(myContract.address)).to.equal(0);
+    expect(await provider.getBalance(myContract.target)).to.equal(0);
 
     console.log('address1', address1);
     await address1.sendTransaction({
-      to: myContract.address,
+      to: myContract.target,
       value: 100,
     });
-    expect(await provider.getBalance(myContract.address)).to.equal(100);
+    expect(await provider.getBalance(myContract.target)).to.equal(100);
     expect(await myContract.getAccountBalances(address1.address)).to.equal(100);
   });
 });

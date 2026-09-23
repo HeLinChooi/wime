@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import { BigNumber, Contract } from "ethers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { network } from "hardhat";
+
+const { ethers, networkHelpers } = await network.getOrCreate();
+const { loadFixture } = networkHelpers;
 
 describe("SendWei", () => {
   const ONE_GWEI = 1000000000;
@@ -44,22 +44,22 @@ describe("SendWei", () => {
     const initialBalance = await ethers.provider.getBalance(receiverAddress);
 
     const scBalance = await sendWei.getBalance();
-    console.log('scBalance', ethers.utils.formatEther(scBalance));
+    console.log('scBalance', ethers.formatEther(scBalance));
     // Send 10 wei to the recipient
-    await sendWei.sendWei(recipient, {value: ethers.utils.parseEther(amountInETH.toString())});
+    await sendWei.sendWei(recipient, {value: ethers.parseEther(amountInETH.toString())});
     
     const scBalance2 = await sendWei.getBalance();
-    console.log('scBalance2', ethers.utils.formatEther(scBalance2));
+    console.log('scBalance2', ethers.formatEther(scBalance2));
     // Get the final balance of the recipient
     const finalBalance = await ethers.provider.getBalance(receiverAddress);
 
     // Calculate the difference between the initial and final balances
-    const difference = finalBalance.sub(initialBalance);
-    console.log('initialBalance', ethers.utils.formatEther(initialBalance));
-    console.log('finalBalance', ethers.utils.formatEther(finalBalance));
-    console.log('difference', ethers.utils.formatEther(difference));
+    const difference = finalBalance - initialBalance;
+    console.log('initialBalance', ethers.formatEther(initialBalance));
+    console.log('finalBalance', ethers.formatEther(finalBalance));
+    console.log('difference', ethers.formatEther(difference));
 
     // Expect the difference to be equal to the amount sent
-    expect(difference).to.equal(ethers.utils.parseEther(amountInETH.toString()));
+    expect(difference).to.equal(ethers.parseEther(amountInETH.toString()));
   });
 });
